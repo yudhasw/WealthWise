@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import MainLayout from "../../layouts/MainLayout";
 import api from "../../api/axios";
 
 export default function AddTransaction() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const prefilled = location.state?.prefilled;
 
   const [form, setForm] = useState({
     description: "",
@@ -32,8 +34,20 @@ export default function AddTransaction() {
 
         // Set default account jika ada
         const accountData = accResponse.data.data || accResponse.data;
-        if (accountData && accountData.length > 0) {
-          setForm((prev) => ({ ...prev, account_id: accountData[0].id }));
+        const defaultAccountId =
+          accountData && accountData.length > 0 ? accountData[0].id : "";
+
+        if (prefilled) {
+          setForm((prev) => ({
+            ...prev,
+            account_id: defaultAccountId,
+            description: prefilled.description ?? prev.description,
+            transaction_date: prefilled.transaction_date ?? prev.transaction_date,
+            type: prefilled.type ?? prev.type,
+            amount: prefilled.amount != null ? String(prefilled.amount) : prev.amount,
+          }));
+        } else if (defaultAccountId) {
+          setForm((prev) => ({ ...prev, account_id: defaultAccountId }));
         }
       } catch (err) {
         console.error("Gagal mengambil data:", err);
@@ -43,7 +57,7 @@ export default function AddTransaction() {
     };
 
     fetchInitialData();
-  }, []);
+  }, [prefilled]);
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
