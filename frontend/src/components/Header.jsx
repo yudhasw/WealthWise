@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom"; // Tambahkan import Link
+import { Link } from "react-router-dom";
 import { Bell, Search, User } from "lucide-react";
 
 export default function Header({ title, rightSection, breadcrumbs }) {
@@ -52,19 +52,25 @@ export default function Header({ title, rightSection, breadcrumbs }) {
         ) : (
           <>
             {/* NOTIFICATION */}
-            <button className="text-gray-400 hover:text-white transition">
+            <Link
+              to="/notifications"
+              className="text-gray-400 hover:text-white transition"
+            >
               <Bell size={18} />
-            </button>
+            </Link>
 
             {/* SEARCH */}
-            <button className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-gray-300 hover:bg-white/20 transition">
+            <Link
+              to="/search"
+              className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-gray-300 hover:bg-white/20 transition"
+            >
               <Search size={18} />
-            </button>
+            </Link>
 
             {/* DIVIDER */}
             <div className="h-8 w-px bg-white/10"></div>
 
-            {/* PROFILE - DIUBAH MENJADI LINK */}
+            {/* PROFILE */}
             <Link
               to="/profile"
               className="w-10 h-10 rounded-full bg-[#1F2937] border border-white/10 flex items-center justify-center hover:bg-[#374151] transition cursor-pointer"

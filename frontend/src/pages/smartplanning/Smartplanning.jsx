@@ -1,12 +1,29 @@
 import React, { useState, useEffect, useCallback } from "react";
 import {
-  Laptop, Plane, PlusCircle, Trash2, Sparkles, Calendar,
-  Target, ShieldCheck, Car, Home, Pencil, Wallet,
-  TrendingUp, ChevronRight, X, Minus, Plus, AlertCircle,
-  CheckCircle2, Clock, Zap,
+  Laptop,
+  Plane,
+  PlusCircle,
+  Trash2,
+  Sparkles,
+  Calendar,
+  Target,
+  ShieldCheck,
+  Car,
+  Home,
+  Pencil,
+  Wallet,
+  TrendingUp,
+  ChevronRight,
+  X,
+  Minus,
+  Plus,
+  AlertCircle,
+  CheckCircle2,
+  Clock,
+  Zap,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import Sidebar from "../../layouts/Sidebar";
+import MainLayout from "../../layouts/MainLayout";
 import Header from "../../components/Header";
 import GoalCard from "../../components/smartplanning/GoalCard";
 import PopUpDeleteGoal from "../../components/PopUpDeleteGoal";
@@ -73,9 +90,7 @@ const AddFundsModal = ({ goal, onClose, onSuccess }) => {
     try {
       await api.put(`/goals/${goal.id}/funds`, {
         amount: parsed,
-        type: operation === "add"
-          ? "increase"
-          : "decrease",
+        type: operation === "add" ? "increase" : "decrease",
       });
       onSuccess();
       onClose();
@@ -100,27 +115,18 @@ const AddFundsModal = ({ goal, onClose, onSuccess }) => {
         {/* Handle bar */}
         <div className="w-12 h-1 bg-white/20 rounded-full mx-auto mb-2" />
 
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h2 className="font-black text-white text-lg">Update Tabungan</h2>
-            <p className="text-gray-400 text-xs mt-0.5">{goal.goal_name}</p>
-          </div>
-          <button
-            onClick={onClose}
-            className="p-2 rounded-xl bg-white/5 hover:bg-white/10 transition text-gray-400"
-          >
-            <X size={16} />
-          </button>
-        </div>
-
         {/* Current Balance Info */}
         <div
           className="rounded-xl px-4 py-3 flex items-center justify-between"
-          style={{ background: hexToRgba(accentColor, 0.12), borderLeft: `3px solid ${accentColor}` }}
+          style={{
+            background: hexToRgba(accentColor, 0.12),
+            borderLeft: `3px solid ${accentColor}`,
+          }}
         >
           <span className="text-gray-400 text-xs">Saldo Tersimpan</span>
-          <span className="font-black text-white">{formatRupiah(goal.current_amount)}</span>
+          <span className="font-black text-white">
+            {formatRupiah(goal.current_amount)}
+          </span>
         </div>
 
         {/* Operation Toggle */}
@@ -174,19 +180,22 @@ const AddFundsModal = ({ goal, onClose, onSuccess }) => {
           disabled={loading || !amount}
           className="w-full py-4 rounded-xl font-black text-white text-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed"
           style={{
-            background: loading || !amount
-              ? "#374151"
-              : operation === "add" ? accentColor : "#ef4444",
+            background:
+              loading || !amount
+                ? "#374151"
+                : operation === "add"
+                  ? accentColor
+                  : "#ef4444",
           }}
         >
-          {loading ? "Menyimpan..." : `Konfirmasi ${operation === "add" ? "Penambahan" : "Penarikan"}`}
+          {loading
+            ? "Menyimpan..."
+            : `Konfirmasi ${operation === "add" ? "Penambahan" : "Penarikan"}`}
         </button>
       </div>
     </div>
   );
 };
-
-
 
 // ─────────────────────────────────────────────────────────────────────────────
 // SKELETON LOADER
@@ -270,10 +279,7 @@ const Smartplanning = () => {
 
   // ── Edit Logic ──
   const handleEdit = (goal) => {
-
-    navigate(
-      `/smart-planning/edit/${goal.id}`
-    );
+    navigate(`/smart-planning/edit/${goal.id}`);
   };
 
   // ── Aggregated Overview Numbers ──
@@ -281,7 +287,9 @@ const Smartplanning = () => {
   const totalSaved = goals.reduce((a, g) => a + Number(g.current_amount), 0);
   const totalRemaining = Math.max(0, totalTarget - totalSaved);
   const overallProgress =
-    totalTarget > 0 ? Math.min(Math.round((totalSaved / totalTarget) * 100), 100) : 0;
+    totalTarget > 0
+      ? Math.min(Math.round((totalSaved / totalTarget) * 100), 100)
+      : 0;
 
   // Total monthly contribution dari semua goal yg pakai plan monthly
   const totalMonthlyContrib = goals
@@ -301,242 +309,268 @@ const Smartplanning = () => {
   // RENDER
   // ─────────────────────────────────────────────────────────────────────────
   return (
-    <div className="min-h-screen bg-[#121417] flex text-white overflow-hidden font-sans">
-      <Sidebar />
+    <MainLayout isLoading={isLoading}>
+      <Header title="Smart Planning" />
 
-      <main className="flex-1 overflow-y-auto">
-        <Header title="Smart Planning" />
-
-        <div className="p-6 lg:p-8 grid grid-cols-12 gap-5">
-          {/* ════════════════════════════════════════════
+      <div className="grid grid-cols-12 gap-5 mt-6">
+        {/* ════════════════════════════════════════════
               LEFT COLUMN — Overview & Chart
           ════════════════════════════════════════════ */}
-          <div className="col-span-12 lg:col-span-7 space-y-5">
-
-            {/* ── Overall Progress Card ── */}
-            <div className="bg-white rounded-2xl p-6 text-[#001D3D] flex items-center gap-6 shadow-sm">
-              {/* Donut SVG */}
-              <div className="relative shrink-0 w-[110px] h-[110px]">
-                <svg viewBox="0 0 110 110" className="w-full h-full -rotate-90">
-                  <circle cx="55" cy="55" r={RADIUS} fill="none" stroke="#E5E7EB" strokeWidth="10" />
-                  <circle
-                    cx="55" cy="55" r={RADIUS}
-                    fill="none"
-                    stroke="#067A55"
-                    strokeWidth="10"
-                    strokeDasharray={CIRCUMFERENCE}
-                    strokeDashoffset={dashOffset}
-                    strokeLinecap="round"
-                    className="transition-all duration-1000 ease-out"
-                  />
-                </svg>
-                <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <span className="text-xl font-black text-[#001D3D]">{overallProgress}%</span>
-                  <span className="text-[9px] font-semibold text-gray-400 tracking-wider uppercase">
-                    Progress
-                  </span>
-                </div>
-              </div>
-
-              {/* Teks Summary */}
-              <div className="flex-1 min-w-0">
-                <h2 className="font-black text-xl text-[#001D3D] mb-1 leading-tight">
-                  {overallProgress >= 100
-                    ? "All Goals Achieved! 🎉"
-                    : overallProgress >= 50
-                    ? "Great progress! 💪"
-                    : "Let's keep saving! 🚀"}
-                </h2>
-                <p className="text-gray-500 text-sm leading-snug mb-4">
-                  {goals.length === 0
-                    ? "Belum ada goal aktif. Yuk buat goal pertamamu!"
-                    : `Kamu sudah menabung ${formatRupiah(totalSaved)} dari total target ${formatRupiah(totalTarget)}.`}
-                </p>
-                <div className="flex flex-col gap-1.5">
-                  <div className="flex items-center gap-2 text-sm font-semibold text-[#001D3D]">
-                    <span className="w-2.5 h-2.5 rounded-full bg-[#067A55] shrink-0" />
-                    Tersimpan: {formatRupiah(totalSaved)}
-                  </div>
-                  <div className="flex items-center gap-2 text-sm font-semibold text-gray-400">
-                    <span className="w-2.5 h-2.5 rounded-full bg-gray-200 shrink-0" />
-                    Tersisa: {formatRupiah(totalRemaining)}
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* ── Stats Row ── */}
-            {goals.length > 0 && (
-              <div className="grid grid-cols-3 gap-3">
-                {[
-                  {
-                    label: "Active Goals",
-                    value: goals.length,
-                    suffix: "",
-                    icon: <Target size={14} />,
-                    color: "#6366f1",
-                  },
-                  {
-                    label: "Monthly Commit",
-                    value: formatRupiah(totalMonthlyContrib),
-                    suffix: "/mo",
-                    icon: <Clock size={14} />,
-                    color: "#067A55",
-                  },
-                  {
-                    label: "Avg. Progress",
-                    value: overallProgress,
-                    suffix: "%",
-                    icon: <TrendingUp size={14} />,
-                    color: "#f59e0b",
-                  },
-                ].map((stat) => (
-                  <div key={stat.label} className="bg-white/5 border border-white/10 rounded-xl p-3.5">
-                    <div
-                      className="w-7 h-7 rounded-lg flex items-center justify-center mb-2"
-                      style={{ background: hexToRgba(stat.color, 0.15), color: stat.color }}
-                    >
-                      {stat.icon}
-                    </div>
-                    <p className="text-white font-black text-base leading-none">
-                      {stat.value}
-                      {stat.suffix && (
-                        <span className="text-xs text-gray-400 font-normal ml-0.5">
-                          {stat.suffix}
-                        </span>
-                      )}
-                    </p>
-                    <p className="text-gray-500 text-[10px] mt-1 font-medium">{stat.label}</p>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {/* ── Monthly Velocity Chart ── */}
-            <div className="bg-white rounded-2xl p-6 text-[#001D3D] shadow-sm">
-              <div className="flex items-start justify-between mb-1">
-                <div>
-                  <h3 className="font-black text-base text-[#001D3D]">Monthly Velocity</h3>
-                  <p className="text-gray-400 text-xs">Estimasi kontribusi per bulan</p>
-                </div>
-                <span className="text-[#067A55] font-black text-sm bg-[#F0FBF6] px-2.5 py-1 rounded-lg">
-                  {formatRupiah(totalMonthlyContrib)} /mo
+        <div className="col-span-12 lg:col-span-7 space-y-5">
+          {/* ── Overall Progress Card ── */}
+          <div className="bg-white rounded-2xl p-6 text-[#001D3D] flex items-center gap-6 shadow-sm">
+            {/* Donut SVG */}
+            <div className="relative shrink-0 w-[110px] h-[110px]">
+              <svg viewBox="0 0 110 110" className="w-full h-full -rotate-90">
+                <circle
+                  cx="55"
+                  cy="55"
+                  r={RADIUS}
+                  fill="none"
+                  stroke="#E5E7EB"
+                  strokeWidth="10"
+                />
+                <circle
+                  cx="55"
+                  cy="55"
+                  r={RADIUS}
+                  fill="none"
+                  stroke="#067A55"
+                  strokeWidth="10"
+                  strokeDasharray={CIRCUMFERENCE}
+                  strokeDashoffset={dashOffset}
+                  strokeLinecap="round"
+                  className="transition-all duration-1000 ease-out"
+                />
+              </svg>
+              <div className="absolute inset-0 flex flex-col items-center justify-center">
+                <span className="text-xl font-black text-[#001D3D]">
+                  {overallProgress}%
+                </span>
+                <span className="text-[9px] font-semibold text-gray-400 tracking-wider uppercase">
+                  Progress
                 </span>
               </div>
+            </div>
 
-              {/* Bar Chart */}
-              <div className="mt-6 flex items-end gap-3 h-36">
-                {MONTHS.map((month, i) => (
-                  <div key={month} className="flex-1 flex flex-col items-center gap-2">
-                    <div className="w-full flex items-end justify-center h-28">
-                      <div
-                        className="w-full rounded-t-lg transition-all duration-700"
-                        style={{
-                          height: `${BAR_HEIGHTS[i]}%`,
-                          background:
-                            i === MONTHS.length - 1
-                              ? "#067A55"
-                              : `linear-gradient(to top, #C2EDD9, #E0F2EC)`,
-                        }}
-                      />
-                    </div>
-                    <span
-                      className="text-[10px] font-semibold tracking-widest"
-                      style={{
-                        color: i === MONTHS.length - 1 ? "#067A55" : "#9ca3af",
-                      }}
-                    >
-                      {month}
-                    </span>
-                  </div>
-                ))}
+            {/* Teks Summary */}
+            <div className="flex-1 min-w-0">
+              <h2 className="font-black text-xl text-[#001D3D] mb-1 leading-tight">
+                {overallProgress >= 100
+                  ? "All Goals Achieved! 🎉"
+                  : overallProgress >= 50
+                    ? "Great progress! 💪"
+                    : "Let's keep saving! 🚀"}
+              </h2>
+              <p className="text-gray-500 text-sm leading-snug mb-4">
+                {goals.length === 0
+                  ? "Belum ada goal aktif. Yuk buat goal pertamamu!"
+                  : `Kamu sudah menabung ${formatRupiah(totalSaved)} dari total target ${formatRupiah(totalTarget)}.`}
+              </p>
+              <div className="flex flex-col gap-1.5">
+                <div className="flex items-center gap-2 text-sm font-semibold text-[#001D3D]">
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#067A55] shrink-0" />
+                  Tersimpan: {formatRupiah(totalSaved)}
+                </div>
+                <div className="flex items-center gap-2 text-sm font-semibold text-gray-400">
+                  <span className="w-2.5 h-2.5 rounded-full bg-gray-200 shrink-0" />
+                  Tersisa: {formatRupiah(totalRemaining)}
+                </div>
               </div>
             </div>
           </div>
 
-          {/* ════════════════════════════════════════════
-              RIGHT COLUMN — Goals List
-          ════════════════════════════════════════════ */}
-          <div className="col-span-12 lg:col-span-5 flex flex-col gap-5">
-            {/* Header */}
-            <div className="flex items-center justify-between px-1">
-              <h3 className="text-sm font-black tracking-tight uppercase text-white">
-                Active Goals{" "}
-                <span className="text-gray-500 font-semibold">({goals.length})</span>
-              </h3>
-              {goals.length > 0 && (
-                <button
-                  onClick={() =>
-                    navigate("/smart-planning/active-goals")
-                  }
-                  className="text-[#067A55] text-xs font-semibold
-                  hover:underline flex items-center gap-0.5"
+          {/* ── Stats Row ── */}
+          {goals.length > 0 && (
+            <div className="grid grid-cols-3 gap-3">
+              {[
+                {
+                  label: "Active Goals",
+                  value: goals.length,
+                  suffix: "",
+                  icon: <Target size={14} />,
+                  color: "#6366f1",
+                },
+                {
+                  label: "Monthly Commit",
+                  value: formatRupiah(totalMonthlyContrib),
+                  suffix: "/mo",
+                  icon: <Clock size={14} />,
+                  color: "#067A55",
+                },
+                {
+                  label: "Avg. Progress",
+                  value: overallProgress,
+                  suffix: "%",
+                  icon: <TrendingUp size={14} />,
+                  color: "#f59e0b",
+                },
+              ].map((stat) => (
+                <div
+                  key={stat.label}
+                  className="bg-white/5 border border-white/10 rounded-xl p-3.5"
                 >
-                  View All <ChevronRight size={12} />
-              </button>
-              )}
+                  <div
+                    className="w-7 h-7 rounded-lg flex items-center justify-center mb-2"
+                    style={{
+                      background: hexToRgba(stat.color, 0.15),
+                      color: stat.color,
+                    }}
+                  >
+                    {stat.icon}
+                  </div>
+                  <p className="text-white font-black text-base leading-none">
+                    {stat.value}
+                    {stat.suffix && (
+                      <span className="text-xs text-gray-400 font-normal ml-0.5">
+                        {stat.suffix}
+                      </span>
+                    )}
+                  </p>
+                  <p className="text-gray-500 text-[10px] mt-1 font-medium">
+                    {stat.label}
+                  </p>
+                </div>
+              ))}
             </div>
+          )}
 
-            {/* ── Loading State ── */}
-            {isLoading && (
-              <>
-                <GoalCardSkeleton />
-                <GoalCardSkeleton />
-              </>
-            )}
-
-            {/* ── Error State ── */}
-            {!isLoading && fetchError && (
-              <div className="bg-red-500/10 border border-red-500/20 rounded-2xl p-5 text-center space-y-2">
-                <AlertCircle className="text-red-400 mx-auto" size={24} />
-                <p className="text-red-300 text-sm font-semibold">Gagal memuat data.</p>
-                <button
-                  onClick={fetchGoals}
-                  className="text-xs text-red-400 underline hover:text-red-300"
-                >
-                  Coba lagi
-                </button>
-              </div>
-            )}
-
-            {/* ── Empty State ── */}
-            {!isLoading && !fetchError && goals.length === 0 && (
-              <div className="bg-white/5 border border-dashed border-gray-700 rounded-2xl p-8 text-center space-y-3">
-                <div className="text-4xl">🎯</div>
-                <p className="text-gray-300 text-sm font-semibold">Belum ada target impian.</p>
-                <p className="text-gray-600 text-xs">
-                  Buat goal pertamamu dan mulai perjalanan menabungmu!
+          {/* ── Monthly Velocity Chart ── */}
+          <div className="bg-white rounded-2xl p-6 text-[#001D3D] shadow-sm">
+            <div className="flex items-start justify-between mb-1">
+              <div>
+                <h3 className="font-black text-base text-[#001D3D]">
+                  Monthly Velocity
+                </h3>
+                <p className="text-gray-400 text-xs">
+                  Estimasi kontribusi per bulan
                 </p>
               </div>
-            )}
+              <span className="text-[#067A55] font-black text-sm bg-[#F0FBF6] px-2.5 py-1 rounded-lg">
+                {formatRupiah(totalMonthlyContrib)} /mo
+              </span>
+            </div>
 
-            {/* ── Goals List ── */}
-            {!isLoading && !fetchError && goals.length > 0 &&
-              goals.map((goal, i) => (
-                <GoalCard
-                  key={goal.id}
-                  goal={goal}
-                  index={i}
-                  onDelete={() => handleOpenDelete(goal)}
-                  onAddFunds={() => handleOpenAddFunds(goal)}
-                  onEdit={() => handleEdit(goal)}
-                />
-              ))
-            }
-
-            {/* ── Add New Goal Button ── */}
-            <button
-              onClick={() => navigate("/smart-planning/add-goal")}
-              className="w-full bg-[#067A55] hover:bg-[#055f42] active:scale-95 transition-all
-                py-4 rounded-2xl flex items-center justify-center gap-2 font-black text-xs
-                uppercase tracking-widest mt-1 shadow-lg shadow-[#067A55]/20"
-            >
-              <PlusCircle size={15} />
-              Add New Goal
-            </button>
+            {/* Bar Chart */}
+            <div className="mt-6 flex items-end gap-3 h-36">
+              {MONTHS.map((month, i) => (
+                <div
+                  key={month}
+                  className="flex-1 flex flex-col items-center gap-2"
+                >
+                  <div className="w-full flex items-end justify-center h-28">
+                    <div
+                      className="w-full rounded-t-lg transition-all duration-700"
+                      style={{
+                        height: `${BAR_HEIGHTS[i]}%`,
+                        background:
+                          i === MONTHS.length - 1
+                            ? "#067A55"
+                            : `linear-gradient(to top, #C2EDD9, #E0F2EC)`,
+                      }}
+                    />
+                  </div>
+                  <span
+                    className="text-[10px] font-semibold tracking-widest"
+                    style={{
+                      color: i === MONTHS.length - 1 ? "#067A55" : "#9ca3af",
+                    }}
+                  >
+                    {month}
+                  </span>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
-      </main>
+
+        {/* ════════════════════════════════════════════
+              RIGHT COLUMN — Goals List
+          ════════════════════════════════════════════ */}
+        <div className="col-span-12 lg:col-span-5 flex flex-col gap-5">
+          {/* Header */}
+          <div className="flex items-center justify-between px-1">
+            <h3 className="text-sm font-black tracking-tight uppercase text-white">
+              Active Goals{" "}
+              <span className="text-gray-500 font-semibold">
+                ({goals.length})
+              </span>
+            </h3>
+            {goals.length > 0 && (
+              <button
+                onClick={() => navigate("/smart-planning/active-goals")}
+                className="text-[#067A55] text-xs font-semibold
+                  hover:underline flex items-center gap-0.5"
+              >
+                View All <ChevronRight size={12} />
+              </button>
+            )}
+          </div>
+
+          {/* ── Loading State ── */}
+          {isLoading && (
+            <>
+              <GoalCardSkeleton />
+              <GoalCardSkeleton />
+            </>
+          )}
+
+          {/* ── Error State ── */}
+          {!isLoading && fetchError && (
+            <div className="bg-red-500/10 border border-red-500/20 rounded-2xl p-5 text-center space-y-2">
+              <AlertCircle className="text-red-400 mx-auto" size={24} />
+              <p className="text-red-300 text-sm font-semibold">
+                Gagal memuat data.
+              </p>
+              <button
+                onClick={fetchGoals}
+                className="text-xs text-red-400 underline hover:text-red-300"
+              >
+                Coba lagi
+              </button>
+            </div>
+          )}
+
+          {/* ── Empty State ── */}
+          {!isLoading && !fetchError && goals.length === 0 && (
+            <div className="bg-white/5 border border-dashed border-gray-700 rounded-2xl p-8 text-center space-y-3">
+              <div className="text-4xl">🎯</div>
+              <p className="text-gray-300 text-sm font-semibold">
+                Belum ada target impian.
+              </p>
+              <p className="text-gray-600 text-xs">
+                Buat goal pertamamu dan mulai perjalanan menabungmu!
+              </p>
+            </div>
+          )}
+
+          {/* ── Goals List ── */}
+          {!isLoading &&
+            !fetchError &&
+            goals.length > 0 &&
+            goals.map((goal, i) => (
+              <GoalCard
+                key={goal.id}
+                goal={goal}
+                index={i}
+                onDelete={() => handleOpenDelete(goal)}
+                onAddFunds={() => handleOpenAddFunds(goal)}
+                onEdit={() => handleEdit(goal)}
+              />
+            ))}
+
+          {/* ── Add New Goal Button ── */}
+          <button
+            onClick={() => navigate("/smart-planning/add-goal")}
+            className="w-full bg-[#067A55] hover:bg-[#055f42] active:scale-95 transition-all
+                py-4 rounded-2xl flex items-center justify-center gap-2 font-black text-xs
+                uppercase tracking-widest mt-1 shadow-lg shadow-[#067A55]/20"
+          >
+            <PlusCircle size={15} />
+            Add New Goal
+          </button>
+        </div>
+      </div>
 
       {/* ════════════════════════════════════════════
           MODALS
@@ -566,7 +600,7 @@ const Smartplanning = () => {
           }}
         />
       )}
-    </div>
+    </MainLayout>
   );
 };
 

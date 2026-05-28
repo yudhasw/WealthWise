@@ -26,7 +26,7 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Navigate to="/login" replace />} />
+        <Route path="/" element={<Navigate to="/landingpage" replace />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/dashboard" element={<DashboardPage />} />
@@ -44,14 +44,12 @@ function App() {
         <Route path="/smart-planning/edit/:id" element={<EditGoalPage />} />
         <Route path="/smart-planning/active-goals" element={<ViewAllGoals />} />
         <Route path="/financial-health" element={<FinancialHealth />} />
-
         <Route path="/accounts" element={<AccountPage />} />
         <Route path="/accounts/add" element={<AddAccountPage />} />
         <Route path="/accounts/edit/:id" element={<EditAccountPage />} />
-
         <Route path="/notifications" element={<NotificationPage />} />
         <Route path="/landingpage" element={<LandingPage />} />
-        <Route path="newgoal" element={<AddNewGoalPage />} />
+        <Route path="/smart-planning/new-goal" element={<AddNewGoalPage />} />
       </Routes>
     </BrowserRouter>
   );

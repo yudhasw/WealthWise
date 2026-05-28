@@ -182,10 +182,12 @@ export default function EditProfilePage() {
         ]}
         rightSection={
           <div className="flex items-center gap-5">
-            <Bell
-              size={18}
-              className="text-gray-400 hover:text-white cursor-pointer transition-colors"
-            />
+            <Link
+              to="/notifications"
+              className="text-gray-400 hover:text-white transition-colors"
+            >
+              <Bell size={18} />
+            </Link>
             <Link
               to="/profile"
               className="w-10 h-10 rounded-full bg-[#1F2937] border border-white/10 flex items-center justify-center hover:bg-[#374151] transition"

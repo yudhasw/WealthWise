@@ -169,10 +169,12 @@ export default function ProfilePage() {
         ]}
         rightSection={
           <div className="flex items-center gap-5">
-            <Bell
-              size={18}
-              className="text-gray-400 hover:text-white cursor-pointer transition-colors"
-            />
+            <Link
+              to="/notifications"
+              className="text-gray-400 hover:text-white transition-colors"
+            >
+              <Bell size={18} />
+            </Link>
           </div>
         }
       />
