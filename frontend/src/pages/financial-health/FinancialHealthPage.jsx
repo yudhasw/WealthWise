@@ -2,7 +2,6 @@ import { useState, useEffect, useRef } from "react";
 import MainLayout from "../../layouts/MainLayout";
 import api from "../../api/axios";
 import Header from "../../components/Header";
-import { Bell, User } from "lucide-react";
 import { Link } from "react-router-dom";
 
 // ── Gauge Chart ────────────────────────────────────────────────────
@@ -247,23 +246,6 @@ export default function FinancialHealth() {
       {/* HEADER */}
       <Header
         title="Financial Health"
-        rightSection={
-          <div className="flex items-center gap-5">
-            <Link
-              to="/notifications"
-              className="text-gray-400 hover:text-white transition-colors"
-            >
-              <Bell size={18} />
-            </Link>
-
-            <Link
-              to="/profile"
-              className="w-10 h-10 rounded-full bg-[#1F2937] border border-white/10 flex items-center justify-center hover:bg-[#374151] transition"
-            >
-              <User size={18} className="text-[#F4B183]" />
-            </Link>
-          </div>
-        }
       />
 
       {/* WEALTHWISE INDEX */}

@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import MainLayout from "../../layouts/MainLayout";
 import Header from "../../components/Header";
 import { Link } from "react-router-dom";
-import { Bell, User, Pencil, Trash2 } from "lucide-react";
+import { Pencil, Trash2 } from "lucide-react";
 import api from "../../api/axios";
 
 export default function AccountPage() {
@@ -243,23 +243,6 @@ export default function AccountPage() {
       {/* HEADER SECTION */}
       <Header
         title="Accounts"
-        rightSection={
-          <div className="flex items-center gap-5">
-            <Link
-              to="/notifications"
-              className="text-gray-400 hover:text-white transition-colors"
-            >
-              <Bell size={18} />
-            </Link>
-
-            <Link
-              to="/profile"
-              className="w-10 h-10 rounded-full bg-[#1F2937] border border-white/10 flex items-center justify-center hover:bg-[#374151] transition"
-            >
-              <User size={18} className="text-[#F4B183]" />
-            </Link>
-          </div>
-        }
       />
 
       {/* TOTAL SALDO CARD */}

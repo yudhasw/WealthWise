@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import MainLayout from "../../layouts/MainLayout";
 import Header from "../../components/Header";
 import api from "../../api/axios";
-import { Bell, User } from "lucide-react";
 
 // ── Edit Modal ────────────────────────────────────────────────────
 function EditModal({ title, subtitle, onClose, onSave, saving, children }) {
@@ -180,22 +179,6 @@ export default function EditProfilePage() {
           { label: "Profile", to: "/profile" },
           { label: "Edit Profile" },
         ]}
-        rightSection={
-          <div className="flex items-center gap-5">
-            <Link
-              to="/notifications"
-              className="text-gray-400 hover:text-white transition-colors"
-            >
-              <Bell size={18} />
-            </Link>
-            <Link
-              to="/profile"
-              className="w-10 h-10 rounded-full bg-[#1F2937] border border-white/10 flex items-center justify-center hover:bg-[#374151] transition"
-            >
-              <User size={18} className="text-[#F4B183]" />
-            </Link>
-          </div>
-        }
       />
 
       {/* PROFILE HERO */}

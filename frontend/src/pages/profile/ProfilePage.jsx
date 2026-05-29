@@ -1,6 +1,5 @@
 import React from "react";
 import {
-  Bell,
   Settings,
   ChevronRight,
   User,
@@ -167,16 +166,6 @@ export default function ProfilePage() {
           { label: "Dashboard", to: "/dashboard" },
           { label: "Profile" },
         ]}
-        rightSection={
-          <div className="flex items-center gap-5">
-            <Link
-              to="/notifications"
-              className="text-gray-400 hover:text-white transition-colors"
-            >
-              <Bell size={18} />
-            </Link>
-          </div>
-        }
       />
       {/* PROFILE HERO */}
       <div className="bg-white rounded-xl p-7 mb-4 border border-gray-100 shadow-sm">

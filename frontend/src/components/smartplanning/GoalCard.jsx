@@ -42,23 +42,14 @@ const renderIcon = (icon, size = 16, className = "") => {
   );
 };
 
-const GoalCard = ({
-  goal,
-  onDelete,
-  onAddFunds,
-  onEdit,
-  index = 0,
-}) => {
+const GoalCard = ({ goal, onDelete, onAddFunds, onEdit, index = 0 }) => {
   const [showMenu, setShowMenu] = useState(false);
 
   const menuRef = useRef(null);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (
-        menuRef.current &&
-        !menuRef.current.contains(event.target)
-      ) {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
         setShowMenu(false);
       }
     };
@@ -66,10 +57,7 @@ const GoalCard = ({
     document.addEventListener("mousedown", handleClickOutside);
 
     return () => {
-      document.removeEventListener(
-        "mousedown",
-        handleClickOutside
-      );
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
@@ -79,19 +67,13 @@ const GoalCard = ({
 
   const target = Number(goal.target_amount || 0);
 
-  const progress = Math.min(
-    Number(goal.progress_percentage || 0),
-    100
-  );
+  const progress = Math.min(Number(goal.progress_percentage || 0), 100);
 
-  const amountPerPeriod = Number(
-    goal.amount_per_period || 0
-  );
+  const amountPerPeriod = Number(goal.amount_per_period || 0);
 
   const accentColor = goal.color_theme || "#067A55";
 
-  const timeRemaining =
-    goal.time_remaining_human || "Target berjalan";
+  const timeRemaining = goal.time_remaining_human || "Target berjalan";
 
   const statusConfig =
     progress >= 100
@@ -101,16 +83,16 @@ const GoalCard = ({
           icon: <CheckCircle2 size={10} />,
         }
       : progress >= 50
-      ? {
-          label: "On Track",
-          bg: "#067A55",
-          icon: <TrendingUp size={10} />,
-        }
-      : {
-          label: "Steady",
-          bg: "#d97706",
-          icon: <Zap size={10} />,
-        };
+        ? {
+            label: "On Track",
+            bg: "#067A55",
+            icon: <TrendingUp size={10} />,
+          }
+        : {
+            label: "Steady",
+            bg: "#d97706",
+            icon: <Zap size={10} />,
+          };
 
   return (
     <div
@@ -155,10 +137,7 @@ const GoalCard = ({
               onClick={() => setShowMenu((prev) => !prev)}
               className="p-1 rounded-lg hover:bg-gray-100 transition"
             >
-              <MoreVertical
-                size={18}
-                className="text-gray-500"
-              />
+              <MoreVertical size={18} className="text-gray-500" />
             </button>
 
             {showMenu && (
@@ -224,10 +203,7 @@ const GoalCard = ({
 
         <p className="text-gray-400 text-sm mt-1">
           Tabung{" "}
-          <span
-            className="font-bold"
-            style={{ color: accentColor }}
-          >
+          <span className="font-bold" style={{ color: accentColor }}>
             {formatRupiah(amountPerPeriod)}
           </span>{" "}
           / {goal.filling_plan}
@@ -274,21 +250,15 @@ const GoalCard = ({
           <Calendar size={12} />
 
           <span>
-            {new Date(goal.start_date).toLocaleDateString(
-              "id-ID",
-              {
-                month: "short",
-                year: "numeric",
-              }
-            )}{" "}
+            {new Date(goal.start_date).toLocaleDateString("id-ID", {
+              month: "short",
+              year: "numeric",
+            })}{" "}
             →{" "}
-            {new Date(goal.target_date).toLocaleDateString(
-              "id-ID",
-              {
-                month: "short",
-                year: "numeric",
-              }
-            )}
+            {new Date(goal.target_date).toLocaleDateString("id-ID", {
+              month: "short",
+              year: "numeric",
+            })}
           </span>
         </div>
       </div>

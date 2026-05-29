@@ -1,8 +1,27 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Bell, Search, User } from "lucide-react";
+import { Bell, User } from "lucide-react";
+import api from "../api/axios";
 
 export default function Header({ title, rightSection, breadcrumbs }) {
+  const [userName, setUserName] = useState(
+    () => localStorage.getItem("wealthwise_user_name") || ""
+  );
+
+  useEffect(() => {
+    api
+      .get("/profile")
+      .then((res) => {
+        const name = res.data.data?.name || "";
+        setUserName(name);
+        localStorage.setItem("wealthwise_user_name", name);
+      })
+      .catch(() => {});
+  }, []);
+
+  // Hanya tampilkan nama depan agar compact
+  const firstName = userName.split(" ")[0];
+
   return (
     <header className="bg-[#191C1E] border-b border-white/5 flex items-center justify-between px-1 py-4 min-h-20">
       {/* TITLE + BREADCRUMB */}
@@ -45,40 +64,33 @@ export default function Header({ title, rightSection, breadcrumbs }) {
         <h1 className="text-[#0FA36B] text-3xl font-bold">{title}</h1>
       </div>
 
-      {/* RIGHT SECTION */}
+      {/* RIGHT: Bell → [slot extra] → Divider → Nama + Avatar */}
       <div className="flex items-center gap-5">
-        {rightSection ? (
-          rightSection
-        ) : (
-          <>
-            {/* NOTIFICATION */}
-            <Link
-              to="/notifications"
-              className="text-gray-400 hover:text-white transition"
-            >
-              <Bell size={18} />
-            </Link>
+        {/* NOTIFICATION */}
+        <Link
+          to="/notifications"
+          className="text-gray-400 hover:text-white transition-colors"
+        >
+          <Bell size={18} />
+        </Link>
 
-            {/* SEARCH */}
-            <Link
-              to="/search"
-              className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-gray-300 hover:bg-white/20 transition"
-            >
-              <Search size={18} />
-            </Link>
+        {/* SLOT EXTRA — konten tambahan dari halaman (opsional) */}
+        {rightSection}
 
-            {/* DIVIDER */}
-            <div className="h-8 w-px bg-white/10"></div>
+        {/* DIVIDER */}
+        <div className="h-8 w-px bg-white/10" />
 
-            {/* PROFILE */}
-            <Link
-              to="/profile"
-              className="w-10 h-10 rounded-full bg-[#1F2937] border border-white/10 flex items-center justify-center hover:bg-[#374151] transition cursor-pointer"
-            >
-              <User size={18} className="text-[#F4B183]" />
-            </Link>
-          </>
-        )}
+        {/* NAMA + AVATAR */}
+        <Link to="/profile" className="flex items-center gap-3 group">
+          {firstName && (
+            <span className="text-sm font-semibold text-gray-300 group-hover:text-emerald-400 transition-colors hidden sm:block">
+              {firstName}
+            </span>
+          )}
+          <div className="w-10 h-10 rounded-full bg-[#1F2937] border border-white/10 flex items-center justify-center group-hover:bg-[#374151] transition">
+            <User size={18} className="text-[#F4B183]" />
+          </div>
+        </Link>
       </div>
     </header>
   );
