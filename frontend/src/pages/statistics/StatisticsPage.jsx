@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import api from "../../api/axios";
 import MainLayout from "../../layouts/MainLayout";
+import Header from "../../components/Header";
+
 import {
   ResponsiveContainer,
   PieChart,
@@ -56,11 +58,10 @@ export default function StatisticsPage() {
 
   return (
     <MainLayout>
+      <Header title="Statistics" />
       <div className="w-full text-white p-6">
-        {/* HEADER */}
+        {/* FILTER */}
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-8">
-          <h1 className="text-2xl font-bold">Stats</h1>
-
           <div className="flex flex-wrap gap-3">
             {/* Income / Outcome */}
             <div className="bg-[#1C1F23] rounded-xl p-1 flex">
