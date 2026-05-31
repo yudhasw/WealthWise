@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { X } from "lucide-react";
 import api from "../api/axios";
 
-export default function Sidebar() {
+export default function Sidebar({ isOpen, onClose }) {
   const navigate = useNavigate();
   const location = useLocation();
-
   const [openMenus, setOpenMenus] = useState({
     financials: true,
     manage: true,
@@ -13,10 +13,7 @@ export default function Sidebar() {
   });
 
   const toggleMenu = (menu) => {
-    setOpenMenus((prev) => ({
-      ...prev,
-      [menu]: !prev[menu],
-    }));
+    setOpenMenus((prev) => ({ ...prev, [menu]: !prev[menu] }));
   };
 
   const handleLogout = async () => {
@@ -30,32 +27,49 @@ export default function Sidebar() {
     }
   };
 
-  const isActive = (path) => {
-    return (
-      location.pathname === path || location.pathname.startsWith(`${path}/`)
-    );
-  };
+  const isActive = (path) =>
+    location.pathname === path || location.pathname.startsWith(`${path}/`);
 
   return (
-    <aside className="w-64 bg-[#2A2C30] border-r border-gray-800 flex flex-col h-screen py-6 px-5 overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+    <aside
+      className={`
+        fixed lg:static inset-y-0 left-0 z-40
+        w-64 bg-[#2A2C30] border-r border-gray-800
+        flex flex-col h-screen py-6 px-5
+        overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]
+        transition-transform duration-300 ease-in-out
+        ${isOpen ? "translate-x-0" : "-translate-x-full lg:hidden"}
+      `}
+    >
       {/* Header / Logo */}
-      <div className="flex items-center gap-3 mb-8 px-2">
-        <div className="w-10 h-10 bg-white text-black font-bold flex items-center justify-center rounded-full text-xs">
-          Logo
+      <div className="flex items-center justify-between mb-8 px-2">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-white text-black font-bold flex items-center justify-center rounded-full text-xs">
+            Logo
+          </div>
+          <div>
+            <h1 className="text-xl font-bold text-emerald-500 tracking-tight leading-tight">
+              WealthWise
+            </h1>
+            <p className="text-[10px] text-gray-400 tracking-widest uppercase">
+              Financial Atelier
+            </p>
+          </div>
         </div>
-        <div>
-          <h1 className="text-xl font-bold text-emerald-500 tracking-tight leading-tight">
-            WealthWise
-          </h1>
-          <p className="text-[10px] text-gray-400 tracking-widest uppercase">
-            Financial Atelier
-          </p>
-        </div>
+
+        {/* Close button - mobile only */}
+        <button
+          onClick={onClose}
+          className="lg:hidden p-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-gray-700/50 transition-all"
+        >
+          <X size={18} />
+        </button>
       </div>
 
       {/* Add Transaction */}
       <Link
         to="/transactions/add"
+        onClick={onClose}
         className="w-full bg-[#0E7958] hover:bg-[#0b6348] text-white font-medium py-3 px-4 rounded-lg flex items-center justify-center gap-2 mb-6 transition-colors"
       >
         <svg
@@ -76,9 +90,10 @@ export default function Sidebar() {
 
       {/* Navigasi Utama */}
       <nav className="flex-1 space-y-1">
-        {/* Section: Dashboard */}
+        {/* Dashboard */}
         <Link
           to="/dashboard"
+          onClick={onClose}
           className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all ${
             isActive("/dashboard")
               ? "bg-[#F3F4F6] text-[#0E7958]"
@@ -117,12 +132,16 @@ export default function Sidebar() {
             <span className="font-medium">Financials</span>
           </button>
 
-          {/* Child Items: Financials */}
           {openMenus.financials && (
             <div className="ml-11 mt-1 space-y-1">
               <Link
                 to="/transactions"
-                className={`block px-3 py-2 text-sm rounded-lg transition-colors ${isActive("/transactions") ? "text-emerald-500 font-medium" : "text-gray-400 hover:text-white"}`}
+                onClick={onClose}
+                className={`block px-3 py-2 text-sm rounded-lg transition-colors ${
+                  isActive("/transactions")
+                    ? "bg-[#F3F4F6] text-[#0E7958]"
+                    : "text-gray-300 hover:text-white hover:bg-gray-800/50"
+                }`}
               >
                 <span className="flex items-center gap-3">
                   <svg
@@ -143,7 +162,12 @@ export default function Sidebar() {
               </Link>
               <Link
                 to="/smart-planning"
-                className={`block px-3 py-2 text-sm rounded-lg transition-colors ${isActive("/smart-planning") ? "text-emerald-500 font-medium" : "text-gray-400 hover:text-white"}`}
+                onClick={onClose}
+                className={`block px-3 py-2 text-sm rounded-lg transition-colors ${
+                  isActive("/smart-planning")
+                    ? "bg-[#F3F4F6] text-[#0E7958]"
+                    : "text-gray-300 hover:text-white hover:bg-gray-800/50"
+                }`}
               >
                 <span className="flex items-center gap-3">
                   <svg
@@ -188,12 +212,16 @@ export default function Sidebar() {
             <span className="font-medium">Manage</span>
           </button>
 
-          {/* Child Items: Manage */}
           {openMenus.manage && (
             <div className="ml-11 mt-1 space-y-1">
               <Link
                 to="/accounts"
-                className={`block px-3 py-2 text-sm rounded-lg transition-colors ${isActive("/accounts") ? "text-emerald-500 font-medium" : "text-gray-400 hover:text-white"}`}
+                onClick={onClose}
+                className={`block px-3 py-2 text-sm rounded-lg transition-colors ${
+                  isActive("/accounts")
+                    ? "bg-[#F3F4F6] text-[#0E7958]"
+                    : "text-gray-300 hover:text-white hover:bg-gray-800/50"
+                }`}
               >
                 <span className="flex items-center gap-3">
                   <svg
@@ -214,7 +242,12 @@ export default function Sidebar() {
               </Link>
               <Link
                 to="/categories"
-                className={`block px-3 py-2 text-sm rounded-lg transition-colors ${isActive("/categories") ? "text-emerald-500 font-medium" : "text-gray-400 hover:text-white"}`}
+                onClick={onClose}
+                className={`block px-3 py-2 text-sm rounded-lg transition-colors ${
+                  isActive("/categories")
+                    ? "bg-[#F3F4F6] text-[#0E7958]"
+                    : "text-gray-300 hover:text-white hover:bg-gray-800/50"
+                }`}
               >
                 <span className="flex items-center gap-3">
                   <svg
@@ -264,12 +297,16 @@ export default function Sidebar() {
             <span className="font-medium">Analytics</span>
           </button>
 
-          {/* Child Items: Analytics */}
           {openMenus.analytics && (
             <div className="ml-11 mt-1 space-y-1">
               <Link
                 to="/statistics"
-                className={`block px-3 py-2 text-sm rounded-lg transition-colors ${isActive("/stats") ? "text-emerald-500 font-medium" : "text-gray-400 hover:text-white"}`}
+                onClick={onClose}
+                className={`block px-3 py-2 text-sm rounded-lg transition-colors ${
+                  isActive("/statistics")
+                    ? "bg-[#F3F4F6] text-[#0E7958]"
+                    : "text-gray-300 hover:text-white hover:bg-gray-800/50"
+                }`}
               >
                 <span className="flex items-center gap-3">
                   <svg
@@ -290,7 +327,12 @@ export default function Sidebar() {
               </Link>
               <Link
                 to="/financial-health"
-                className={`block px-3 py-2 text-sm rounded-lg transition-colors ${isActive("/financial-health") ? "text-emerald-500 font-medium" : "text-gray-400 hover:text-white"}`}
+                onClick={onClose}
+                className={`block px-3 py-2 text-sm rounded-lg transition-colors ${
+                  isActive("/financial-health")
+                    ? "bg-[#F3F4F6] text-[#0E7958]"
+                    : "text-gray-300 hover:text-white hover:bg-gray-800/50"
+                }`}
               >
                 <span className="flex items-center gap-3">
                   <svg
@@ -318,6 +360,7 @@ export default function Sidebar() {
       <div className="pt-6 mt-6 border-t border-gray-700 space-y-1">
         <Link
           to="/support"
+          onClick={onClose}
           className="w-full flex items-center gap-3 px-4 py-3 text-gray-300 hover:text-white transition-colors rounded-xl hover:bg-gray-800/50"
         >
           <svg
