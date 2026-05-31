@@ -18,6 +18,7 @@ export default function StatisticsPage() {
   const [mode, setMode] = useState("outcome");
   const [period, setPeriod] = useState("month");
   const [statistics, setStatistics] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   const pieData =
     statistics?.top_categories?.map((item) => ({
@@ -36,6 +37,7 @@ export default function StatisticsPage() {
   }, [mode, period]);
 
   const fetchStatistics = async () => {
+    setIsLoading(true);
     try {
       const response = await api.get(
         `/statistics?type=${mode}&period=${period}`,
@@ -43,6 +45,8 @@ export default function StatisticsPage() {
       setStatistics(response.data);
     } catch (error) {
       console.error(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -52,12 +56,8 @@ export default function StatisticsPage() {
       value: Number(item.total),
     })) || [];
 
-  if (!statistics) {
-    return <div className="text-white p-6">Loading statistics...</div>;
-  }
-
   return (
-    <MainLayout>
+    <MainLayout isLoading={isLoading}>
       <Header title="Statistics" />
       <div className="w-full text-white p-6">
         {/* FILTER */}

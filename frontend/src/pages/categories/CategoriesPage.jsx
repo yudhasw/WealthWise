@@ -391,7 +391,7 @@ export default function CategoriesPage() {
       : `Tahun ${selectedYear}`;
 
   return (
-    <MainLayout>
+    <MainLayout isLoading={loading}>
       {deleteTarget && (
         <DeleteModal
           category={deleteTarget}
@@ -402,9 +402,7 @@ export default function CategoriesPage() {
       )}
 
       {/* HEADER */}
-      <Header
-        title="Categories"
-      />
+      <Header title="Categories" />
 
       {/* BUDGET OVERVIEW CARD */}
       <div className="rounded-3xl bg-gradient-to-br from-[#0E7958] via-[#0a5c42] to-[#0f2027] p-8 mb-8">
