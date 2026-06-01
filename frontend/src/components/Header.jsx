@@ -7,7 +7,7 @@ import { SidebarContext } from "../layouts/MainLayout";
 export default function Header({ title, rightSection, breadcrumbs }) {
   const { toggleSidebar } = useContext(SidebarContext);
   const [userName, setUserName] = useState(
-    () => localStorage.getItem("wealthwise_user_name") || ""
+    () => localStorage.getItem("wealthwise_user_name") || "",
   );
 
   useEffect(() => {
@@ -21,12 +21,11 @@ export default function Header({ title, rightSection, breadcrumbs }) {
       .catch(() => {});
   }, []);
 
-  // Hanya tampilkan nama depan agar compact
   const firstName = userName.split(" ")[0];
 
   return (
     <header className="bg-[#191C1E] border-b border-white/5 flex items-center justify-between px-1 py-4 min-h-20">
-      {/* HAMBURGER + TITLE + BREADCRUMB */}
+      {/* HAMBURGER */}
       <div className="flex items-center gap-3">
         <button
           onClick={toggleSidebar}
@@ -35,42 +34,42 @@ export default function Header({ title, rightSection, breadcrumbs }) {
           <Menu size={20} />
         </button>
         <div>
-        {breadcrumbs && breadcrumbs.length > 0 && (
-          <nav className="flex items-center gap-1.5 mb-1">
-            {breadcrumbs.map((crumb, i) => (
-              <React.Fragment key={i}>
-                {i > 0 && (
-                  <svg
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth={2}
-                    stroke="currentColor"
-                    className="w-3 h-3 text-gray-600"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M8.25 4.5l7.5 7.5-7.5 7.5"
-                    />
-                  </svg>
-                )}
-                {crumb.to ? (
-                  <Link
-                    to={crumb.to}
-                    className="text-xs text-gray-500 hover:text-emerald-400 transition-colors font-medium"
-                  >
-                    {crumb.label}
-                  </Link>
-                ) : (
-                  <span className="text-xs text-gray-400 font-medium">
-                    {crumb.label}
-                  </span>
-                )}
-              </React.Fragment>
-            ))}
-          </nav>
-        )}
-        <h1 className="text-[#0FA36B] text-3xl font-bold">{title}</h1>
+          {breadcrumbs && breadcrumbs.length > 0 && (
+            <nav className="flex items-center gap-1.5 mb-1">
+              {breadcrumbs.map((crumb, i) => (
+                <React.Fragment key={i}>
+                  {i > 0 && (
+                    <svg
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth={2}
+                      stroke="currentColor"
+                      className="w-3 h-3 text-gray-600"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M8.25 4.5l7.5 7.5-7.5 7.5"
+                      />
+                    </svg>
+                  )}
+                  {crumb.to ? (
+                    <Link
+                      to={crumb.to}
+                      className="text-xs text-gray-500 hover:text-emerald-400 transition-colors font-medium"
+                    >
+                      {crumb.label}
+                    </Link>
+                  ) : (
+                    <span className="text-xs text-gray-400 font-medium">
+                      {crumb.label}
+                    </span>
+                  )}
+                </React.Fragment>
+              ))}
+            </nav>
+          )}
+          <h1 className="text-[#0FA36B] text-3xl font-bold">{title}</h1>
         </div>
       </div>
 
