@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Link } from "react-router-dom";
-import { Bell, User } from "lucide-react";
+import { Bell, User, Menu } from "lucide-react";
 import api from "../api/axios";
+import { SidebarContext } from "../layouts/MainLayout";
 
 export default function Header({ title, rightSection, breadcrumbs }) {
+  const { toggleSidebar } = useContext(SidebarContext);
   const [userName, setUserName] = useState(
     () => localStorage.getItem("wealthwise_user_name") || ""
   );
@@ -24,8 +26,15 @@ export default function Header({ title, rightSection, breadcrumbs }) {
 
   return (
     <header className="bg-[#191C1E] border-b border-white/5 flex items-center justify-between px-1 py-4 min-h-20">
-      {/* TITLE + BREADCRUMB */}
-      <div>
+      {/* HAMBURGER + TITLE + BREADCRUMB */}
+      <div className="flex items-center gap-3">
+        <button
+          onClick={toggleSidebar}
+          className="p-2 rounded-lg text-gray-400 hover:text-white hover:bg-gray-800 transition-colors"
+        >
+          <Menu size={20} />
+        </button>
+        <div>
         {breadcrumbs && breadcrumbs.length > 0 && (
           <nav className="flex items-center gap-1.5 mb-1">
             {breadcrumbs.map((crumb, i) => (
@@ -62,6 +71,7 @@ export default function Header({ title, rightSection, breadcrumbs }) {
           </nav>
         )}
         <h1 className="text-[#0FA36B] text-3xl font-bold">{title}</h1>
+        </div>
       </div>
 
       {/* RIGHT: Bell → [slot extra] → Divider → Nama + Avatar */}
