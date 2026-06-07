@@ -136,9 +136,7 @@ export default function Transactions() {
   return (
     <MainLayout isLoading={isLoading}>
       {/* HEADER */}
-      <Header
-        title="Transactions"
-      />
+      <Header title="Transactions" />
 
       {/* FILTER BAR */}
       <div className="bg-white border border-[#1e2124] rounded-2xl p-4 mb-6 flex flex-wrap md:flex-nowrap gap-4 items-end w-full">

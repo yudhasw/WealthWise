@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import MainLayout from "../../layouts/MainLayout";
 import api from "../../api/axios";
@@ -42,9 +42,11 @@ export default function AddTransaction() {
             ...prev,
             account_id: defaultAccountId,
             description: prefilled.description ?? prev.description,
-            transaction_date: prefilled.transaction_date ?? prev.transaction_date,
+            transaction_date:
+              prefilled.transaction_date ?? prev.transaction_date,
             type: prefilled.type ?? prev.type,
-            amount: prefilled.amount != null ? String(prefilled.amount) : prev.amount,
+            amount:
+              prefilled.amount != null ? String(prefilled.amount) : prev.amount,
           }));
         } else if (defaultAccountId) {
           setForm((prev) => ({ ...prev, account_id: defaultAccountId }));
@@ -61,6 +63,13 @@ export default function AddTransaction() {
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [mode, setMode] = useState("manual");
+  const [scanFile, setScanFile] = useState(null);
+  const [scanPreview, setScanPreview] = useState(null);
+  const [scanDragOver, setScanDragOver] = useState(false);
+  const [scanScanning, setScanScanning] = useState(false);
+  const [scanError, setScanError] = useState(null);
+  const scanInputRef = useRef(null);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -129,6 +138,41 @@ export default function AddTransaction() {
     );
   };
 
+  const handleScanFile = (f) => {
+    if (!f) return;
+    if (!f.type.startsWith("image/")) { setScanError("File harus berupa gambar (JPG, PNG, WEBP)."); return; }
+    setScanError(null);
+    setScanFile(f);
+    setScanPreview(URL.createObjectURL(f));
+  };
+
+  const handleScan = async () => {
+    if (!scanFile) return;
+    setScanScanning(true);
+    setScanError(null);
+    try {
+      const formData = new FormData();
+      formData.append("receipt", scanFile);
+      const res = await api.post("/receipt/scan", formData, { headers: { "Content-Type": "multipart/form-data" } });
+      const prefilled = res.data.data;
+      setForm((prev) => ({
+        ...prev,
+        description: prefilled.description ?? prev.description,
+        transaction_date: prefilled.transaction_date ?? prev.transaction_date,
+        type: prefilled.type ?? prev.type,
+        amount: prefilled.amount != null ? String(prefilled.amount) : prev.amount,
+        category_id: prefilled.category_id ?? prev.category_id,
+      }));
+      setScanFile(null);
+      setScanPreview(null);
+      setMode("manual");
+    } catch (err) {
+      setScanError(err.response?.data?.message || "Gagal memindai struk. Pastikan gambar jelas dan coba lagi.");
+    } finally {
+      setScanScanning(false);
+    }
+  };
+
   // FILTER KATEGORI
   const filteredCategories = categories.filter(
     (cat) => cat.category_type === form.type || cat.type === form.type,
@@ -161,6 +205,88 @@ export default function AddTransaction() {
 
         {/* FORM CARD */}
         <div className="bg-[#2C2F32] border border-[#262b2f] rounded-2xl p-8">
+          {/* Mode Toggle */}
+          <div className="flex bg-[#1e2124] rounded-xl p-1 mb-7 gap-1">
+            {[{ key: "manual", label: "Manual" }, { key: "scan", label: "Scan Receipt" }].map(({ key, label }) => (
+              <button
+                key={key}
+                type="button"
+                onClick={() => setMode(key)}
+                className={`flex-1 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 ${
+                  mode === key
+                    ? "bg-[#2C2F32] text-white shadow-sm"
+                    : "text-gray-500 hover:text-gray-300"
+                }`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+
+          {mode === "scan" ? (
+            <>
+              {/* Inline Scan Area */}
+              <div
+                onClick={() => !scanPreview && scanInputRef.current?.click()}
+                onDragOver={(e) => { e.preventDefault(); setScanDragOver(true); }}
+                onDragLeave={() => setScanDragOver(false)}
+                onDrop={(e) => { e.preventDefault(); setScanDragOver(false); handleScanFile(e.dataTransfer.files[0]); }}
+                className={`relative rounded-2xl border-2 border-dashed transition-all cursor-pointer mb-5 overflow-hidden ${
+                  scanDragOver
+                    ? "border-emerald-500 bg-emerald-500/10"
+                    : "border-white/15 bg-white/3 hover:border-white/30 hover:bg-white/5"
+                }`}
+                style={{ minHeight: "220px" }}
+              >
+                {scanPreview ? (
+                  <>
+                    <img src={scanPreview} alt="Receipt preview" className="w-full object-contain max-h-64" />
+                    <button
+                      onClick={(e) => { e.stopPropagation(); setScanFile(null); setScanPreview(null); }}
+                      className="absolute top-2 right-2 bg-black/60 hover:bg-black/80 text-white rounded-full p-1.5 transition-colors"
+                    >
+                      <svg fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </>
+                ) : (
+                  <div className="flex flex-col items-center justify-center h-full py-14 px-6 text-center select-none">
+                    <div className="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center mb-4 border border-white/10">
+                      <svg fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 text-gray-400">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M3 8V6a2 2 0 012-2h2M3 16v2a2 2 0 002 2h2m10-14h2a2 2 0 012 2v2m-2 10h-2a2 2 0 01-2-2v-2M8 12h8m-4-4v8" />
+                      </svg>
+                    </div>
+                    <p className="text-gray-300 font-medium text-sm mb-1">Drag & drop atau klik untuk pilih</p>
+                    <p className="text-gray-500 text-xs">JPG, PNG, WEBP — maks. 10 MB</p>
+                  </div>
+                )}
+              </div>
+              <input ref={scanInputRef} type="file" accept="image/*" className="hidden" onChange={(e) => handleScanFile(e.target.files[0])} />
+              {scanError && (
+                <p className="text-red-400 text-sm mb-5 bg-red-500/10 border border-red-500/20 px-4 py-3 rounded-xl">{scanError}</p>
+              )}
+              {/* Scan Actions */}
+              <div className="flex justify-between items-center">
+                <button type="button" onClick={() => navigate("/transactions")} className="text-white hover:text-gray-300 text-sm font-bold px-2 py-3.5 rounded-xl transition-colors">
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={handleScan}
+                  disabled={!scanFile || scanScanning}
+                  className="bg-[#047857] hover:bg-[#036549] disabled:opacity-50 text-white px-8 py-3.5 rounded-xl text-sm font-bold transition-all flex items-center gap-2"
+                >
+                  {scanScanning ? (
+                    <><div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />Memindai...</>
+                  ) : (
+                    "Scan & Isi Form"
+                  )}
+                </button>
+              </div>
+            </>
+          ) : (
+            <>
           {/* Transaction Name */}
           <div className="mb-5">
             <label className="block text-[10px] font-bold text-gray-300 uppercase tracking-widest mb-2">
@@ -373,6 +499,8 @@ export default function AddTransaction() {
               )}
             </button>
           </div>
+            </>
+          )}
         </div>
       </div>
     </MainLayout>

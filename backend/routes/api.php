@@ -38,6 +38,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/transactions/{id}', [TransactionController::class, 'show']);
     Route::put('/transactions/{id}', [TransactionController::class, 'update']);
     Route::delete('/transactions/{id}', [TransactionController::class, 'destroy']);
+    Route::post('/transactions/receipt/scan', [ReceiptScanController::class, 'scan']);
+
 
     Route::get('/categories', [CategoryController::class, 'index']);
     Route::post('/categories/add', [CategoryController::class, 'store']);
@@ -66,7 +68,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/goals/{id}', [FinancialGoalController::class, 'update']);
     Route::delete('/goals/{id}', [FinancialGoalController::class, 'destroy']);
     Route::put('/goals/{id}/funds',[FinancialGoalController::class, 'updateFunds']);
-    
 });
 
 

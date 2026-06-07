@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { X } from "lucide-react";
 import api from "../api/axios";
+import logo from "../assets/logo.png";
 
 export default function Sidebar({ isOpen, onClose }) {
   const navigate = useNavigate();
@@ -44,9 +45,7 @@ export default function Sidebar({ isOpen, onClose }) {
       {/* Header / Logo */}
       <div className="flex items-center justify-between mb-8 px-2">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-white text-black font-bold flex items-center justify-center rounded-full text-xs">
-            Logo
-          </div>
+          <img src={logo} alt="Logo" className="w-10 h-10" />
           <div>
             <h1 className="text-xl font-bold text-emerald-500 tracking-tight leading-tight">
               WealthWise

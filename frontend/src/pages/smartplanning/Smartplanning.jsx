@@ -408,18 +408,9 @@ const Smartplanning = () => {
               ].map((stat) => (
                 <div
                   key={stat.label}
-                  className="bg-white/5 border border-white/10 rounded-xl p-3.5"
+                  className="bg-white border border-white/10 rounded-xl p-3.5"
                 >
-                  <div
-                    className="w-7 h-7 rounded-lg flex items-center justify-center mb-2"
-                    style={{
-                      background: hexToRgba(stat.color, 0.15),
-                      color: stat.color,
-                    }}
-                  >
-                    {stat.icon}
-                  </div>
-                  <p className="text-white font-black text-base leading-none">
+                  <p className="text-black font-black text-base leading-none">
                     {stat.value}
                     {stat.suffix && (
                       <span className="text-xs text-gray-400 font-normal ml-0.5">
