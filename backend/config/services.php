@@ -39,4 +39,7 @@ return [
         'key' => env('GROQ_API_KEY'),
     ],
 
+    'sendinblue' => [
+        'key' => env('SENDINBLUE_KEY'),
+    ],
 ];
