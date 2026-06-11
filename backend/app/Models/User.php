@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use App\Notifications\VerifyEmailCode;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -62,5 +63,24 @@ class User extends Authenticatable implements MustVerifyEmail
     public function transactions(): HasMany
     {
         return $this->hasMany(Transaction::class);
+    }
+
+    public function generateVerificationCode(): string
+    {
+        $code = str_pad((string) random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+
+        $this->forceFill([
+            'verification_code' => $code,
+            'verification_code_expires_at' => now()->addMinutes(10),
+        ])->save();
+
+        return $code;
+    }
+
+    public function sendVerificationCodeNotification(): void
+    {
+        $code = $this->generateVerificationCode();
+
+        $this->notify(new VerifyEmailCode($code));
     }
 }

@@ -28,10 +28,10 @@ class AuthController extends Controller
             'password' => Hash::make($request->password)
         ]);
 
-        $user->sendEmailVerificationNotification();
+        $user->sendVerificationCodeNotification();
 
         return response()->json([
-            'message' => 'Registrasi berhasil! Mohon periksa kotak masuk (atau folder spam) email Anda untuk link verifikasi.',
+            'message' => 'Registrasi berhasil! Mohon periksa kotak masuk (atau folder spam) email Anda untuk kode verifikasi.',
             'requires_verification' => true,
             'email' => $user->email
         ], 201);

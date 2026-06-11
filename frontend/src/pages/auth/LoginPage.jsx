@@ -7,12 +7,14 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [needsVerification, setNeedsVerification] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
     setErrorMessage("");
+    setNeedsVerification(false);
 
     try {
       const response = await api.post("/login", { email, password });
@@ -23,6 +25,10 @@ export default function Login() {
         error.response?.data?.message ||
           "Login failed. Please check your credentials.",
       );
+
+      if (error.response?.status === 403) {
+        setNeedsVerification(true);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -96,6 +102,17 @@ export default function Login() {
           {errorMessage && (
             <div className="mb-6 p-3 bg-red-500/10 border border-red-500/50 text-red-500 rounded-lg text-sm text-center">
               {errorMessage}
+              {needsVerification && (
+                <div className="mt-2">
+                  <Link
+                    to="/verify-email"
+                    state={{ email }}
+                    className="font-bold text-[#047857] hover:text-emerald-400 transition-colors underline"
+                  >
+                    Verifikasi email sekarang
+                  </Link>
+                </div>
+              )}
             </div>
           )}
 

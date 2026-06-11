@@ -39,10 +39,13 @@ export default function Register() {
       });
 
       setSuccessMessage(
-        "Account created successfully! Redirecting to login...",
+        "Akun berhasil dibuat! Mengalihkan ke halaman verifikasi kode...",
       );
 
-      setTimeout(() => navigate("/login"), 2000);
+      setTimeout(
+        () => navigate("/verify-email", { state: { email } }),
+        2000,
+      );
     } catch (error) {
       if (error.response && error.response.status === 422) {
         const validationErrors =

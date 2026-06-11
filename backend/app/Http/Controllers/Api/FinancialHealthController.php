@@ -28,7 +28,6 @@ class FinancialHealthController extends Controller
     // Endpoint khusus untuk Chatbot AI via Groq
     public function chat(Request $request)
     {
-        // Validasi agar tidak error jika format array salah
         $request->validate([
             'messages' => 'required|array',
             'messages.*.role' => 'required|string|in:user,assistant',

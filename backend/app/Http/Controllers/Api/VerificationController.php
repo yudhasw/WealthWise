@@ -4,34 +4,71 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class VerificationController extends Controller
 {
-    public function verify($id, $hash)
+    public function verifyCode(Request $request)
     {
-        $user = User::findOrFail($id);
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email',
+            'code' => 'required|string|size:6',
+        ]);
 
-        if (! hash_equals((string) $hash, sha1($user->getEmailForVerification()))) {
-            return response()->json(['message' => 'Link verifikasi tidak valid atau sudah kadaluarsa.'], 403);
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+
+        $user = User::where('email', $request->email)->first();
+
+        if (! $user) {
+            return response()->json(['message' => 'Pengguna tidak ditemukan.'], 404);
         }
 
         if ($user->hasVerifiedEmail()) {
-            return redirect(env('FRONTEND_URL') . '/login?status=already-verified');
-        }
-
-        $user->markEmailAsVerified();
-
-        return redirect(env('FRONTEND_URL') . '/login?status=verified-success');
-    }
-
-    public function resend(Request $request)
-    {
-        if ($request->user()->hasVerifiedEmail()) {
             return response()->json(['message' => 'Email sudah terverifikasi.'], 400);
         }
 
-        $request->user()->sendEmailVerificationNotification();
+        if (
+            is_null($user->verification_code) ||
+            is_null($user->verification_code_expires_at) ||
+            now()->greaterThan($user->verification_code_expires_at) ||
+            $user->verification_code !== $request->code
+        ) {
+            return response()->json(['message' => 'Kode verifikasi tidak valid atau sudah kadaluarsa.'], 422);
+        }
 
-        return response()->json(['message' => 'Link verifikasi telah dikirim ulang ke email kamu.']);
+        $user->forceFill([
+            'email_verified_at' => now(),
+            'verification_code' => null,
+            'verification_code_expires_at' => null,
+        ])->save();
+
+        return response()->json(['message' => 'Email berhasil diverifikasi. Silakan login.']);
+    }
+
+    public function resendCode(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+
+        $user = User::where('email', $request->email)->first();
+
+        if (! $user) {
+            return response()->json(['message' => 'Pengguna tidak ditemukan.'], 404);
+        }
+
+        if ($user->hasVerifiedEmail()) {
+            return response()->json(['message' => 'Email sudah terverifikasi.'], 400);
+        }
+
+        $user->sendVerificationCodeNotification();
+
+        return response()->json(['message' => 'Kode verifikasi telah dikirim ulang ke email kamu.']);
     }
 }

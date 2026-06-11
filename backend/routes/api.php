@@ -19,6 +19,9 @@ use App\Http\Controllers\Api\ProfileController;
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
+Route::post('/email/verify-code', [VerificationController::class, 'verifyCode']);
+Route::post('/email/resend-code', [VerificationController::class, 'resendCode'])->middleware('throttle:3,1');
+
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/user', function (Request $request) {
@@ -29,9 +32,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/accounts', [AccountController::class, 'store']);
     Route::get('/accounts/total', [AccountController::class, 'totalBalance']);
 
-    Route::get('/accounts/{id}', [AccountController::class, 'show']);    // Untuk ambil 1 data saat Edit
-    Route::put('/accounts/{id}', [AccountController::class, 'update']);  // Untuk simpan perubahan Edit
-    Route::delete('/accounts/{id}', [AccountController::class, 'destroy']); // Untuk hapus akun
+    Route::get('/accounts/{id}', [AccountController::class, 'show']);    
+    Route::put('/accounts/{id}', [AccountController::class, 'update']);  
+    Route::delete('/accounts/{id}', [AccountController::class, 'destroy']); 
     
     Route::get('/transactions', [TransactionController::class, 'index']);
     Route::post('/transactions/add', [TransactionController::class, 'store']);
@@ -71,10 +74,6 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 
-
-Route::get('/email/verify/{id}/{hash}', [VerificationController::class, 'verify'])
-    ->middleware(['signed'])
-    ->name('verification.verify');
 
 Route::get('/test', function() {
     return response()->json(['status' => 'ok', 'message' => 'API works!']);
