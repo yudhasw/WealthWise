@@ -7,9 +7,50 @@ use Illuminate\Http\Request;
 use App\Models\Transaction;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use OpenApi\Attributes as OA;
 
 class StatisticsController extends Controller
 {
+    #[OA\Get(
+        path: '/statistics',
+        operationId: 'getStatistics',
+        summary: 'Statistik transaksi (income/expense) per periode',
+        tags: ['Statistics'],
+        security: [['sanctum' => []]],
+        parameters: [
+            new OA\Parameter(name: 'type', in: 'query', required: false, description: "Jenis transaksi yang difokuskan untuk top_categories & weekly_chart", schema: new OA\Schema(type: 'string', enum: ['income', 'outcome'], default: 'outcome')),
+            new OA\Parameter(name: 'period', in: 'query', required: false, schema: new OA\Schema(type: 'string', enum: ['month', '3months', 'year'], default: 'month')),
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Statistik transaksi',
+                content: new OA\JsonContent(properties: [
+                    new OA\Property(property: 'success', type: 'boolean', example: true),
+                    new OA\Property(property: 'total_income', type: 'number', format: 'float', example: 5000000),
+                    new OA\Property(property: 'total_expense', type: 'number', format: 'float', example: 2000000),
+                    new OA\Property(property: 'net_savings', type: 'number', format: 'float', example: 3000000),
+                    new OA\Property(property: 'top_categories', type: 'array', items: new OA\Items(
+                        type: 'object',
+                        properties: [
+                            new OA\Property(property: 'category_name', type: 'string', nullable: true, example: 'Makanan'),
+                            new OA\Property(property: 'total', type: 'number', format: 'float', example: 1000000),
+                            new OA\Property(property: 'percentage', type: 'number', example: 50),
+                        ]
+                    )),
+                    new OA\Property(property: 'weekly_chart', type: 'array', items: new OA\Items(
+                        type: 'object',
+                        properties: [
+                            new OA\Property(property: 'day', type: 'string', example: 'Mon'),
+                            new OA\Property(property: 'total', type: 'number', format: 'float', example: 250000),
+                        ]
+                    )),
+                    new OA\Property(property: 'transactions', type: 'array', items: new OA\Items(ref: '#/components/schemas/Transaction')),
+                ])
+            ),
+            new OA\Response(response: 401, description: 'Unauthenticated'),
+        ]
+    )]
     public function index(Request $request)
     {
         $type = $request->query('type', 'outcome');

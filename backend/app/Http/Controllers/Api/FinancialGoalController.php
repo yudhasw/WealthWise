@@ -8,10 +8,29 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
+use OpenApi\Attributes as OA;
 
 class FinancialGoalController extends Controller
 {
     // ─── GET /api/goals ───────────────────────────────────────────
+    #[OA\Get(
+        path: '/goals',
+        operationId: 'getGoals',
+        summary: 'Daftar semua target keuangan milik pengguna',
+        tags: ['Goals'],
+        security: [['sanctum' => []]],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Daftar target keuangan',
+                content: new OA\JsonContent(properties: [
+                    new OA\Property(property: 'success', type: 'boolean', example: true),
+                    new OA\Property(property: 'data', type: 'array', items: new OA\Items(ref: '#/components/schemas/FinancialGoal')),
+                ])
+            ),
+            new OA\Response(response: 401, description: 'Unauthenticated'),
+        ]
+    )]
     public function index()
     {
         $goals = FinancialGoal::where('user_id', Auth::id())
@@ -25,6 +44,57 @@ class FinancialGoalController extends Controller
     }
 
     // ─── POST /api/goals ──────────────────────────────────────────
+    #[OA\Post(
+        path: '/goals',
+        operationId: 'createGoal',
+        summary: 'Buat target keuangan baru',
+        description: '`amount_per_period` dihitung otomatis berdasarkan target_amount, start_date, target_date, dan filling_plan yang dipilih.',
+        tags: ['Goals'],
+        security: [['sanctum' => []]],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                required: ['goal_name', 'target_amount', 'start_date', 'target_date', 'filling_plan'],
+                properties: [
+                    new OA\Property(property: 'goal_name', type: 'string', maxLength: 255, example: 'Dana Darurat'),
+                    new OA\Property(property: 'target_amount', type: 'number', format: 'float', minimum: 1000, example: 10000000),
+                    new OA\Property(property: 'start_date', type: 'string', format: 'date', example: '2026-01-01'),
+                    new OA\Property(property: 'target_date', type: 'string', format: 'date', description: 'Harus setelah start_date', example: '2026-12-31'),
+                    new OA\Property(property: 'filling_plan', type: 'string', enum: ['DAILY', 'WEEKLY', 'MONTHLY'], description: 'Harus tersedia untuk durasi yang dipilih', example: 'MONTHLY'),
+                    new OA\Property(property: 'icon', type: 'string', nullable: true, maxLength: 10, example: '🎯'),
+                    new OA\Property(property: 'color_theme', type: 'string', nullable: true, maxLength: 20, example: '#6366f1'),
+                ]
+            )
+        ),
+        responses: [
+            new OA\Response(
+                response: 201,
+                description: 'Goal berhasil dibuat',
+                content: new OA\JsonContent(properties: [
+                    new OA\Property(property: 'success', type: 'boolean', example: true),
+                    new OA\Property(property: 'message', type: 'string', example: 'Goal created successfully.'),
+                    new OA\Property(property: 'data', ref: '#/components/schemas/FinancialGoal'),
+                ])
+            ),
+            new OA\Response(response: 401, description: 'Unauthenticated'),
+            new OA\Response(
+                response: 422,
+                description: "Validasi gagal, atau filling_plan tidak tersedia untuk durasi yang dipilih",
+                content: new OA\JsonContent(properties: [
+                    new OA\Property(property: 'success', type: 'boolean', example: false),
+                    new OA\Property(property: 'message', type: 'string', example: "Plan 'WEEKLY' is not available for this duration."),
+                    new OA\Property(property: 'available_plans', type: 'array', items: new OA\Items(
+                        type: 'object',
+                        properties: [
+                            new OA\Property(property: 'plan', type: 'string', example: 'DAILY'),
+                            new OA\Property(property: 'label', type: 'string', example: 'Daily'),
+                            new OA\Property(property: 'amount', type: 'number', format: 'float', example: 27397.26),
+                        ]
+                    )),
+                ])
+            ),
+        ]
+    )]
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -83,6 +153,28 @@ class FinancialGoalController extends Controller
     }
 
     // ─── GET /api/goals/{id} ──────────────────────────────────────
+    #[OA\Get(
+        path: '/goals/{id}',
+        operationId: 'getGoal',
+        summary: 'Ambil detail satu target keuangan',
+        tags: ['Goals'],
+        security: [['sanctum' => []]],
+        parameters: [
+            new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'integer'), example: 1),
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Detail target keuangan',
+                content: new OA\JsonContent(properties: [
+                    new OA\Property(property: 'success', type: 'boolean', example: true),
+                    new OA\Property(property: 'data', ref: '#/components/schemas/FinancialGoal'),
+                ])
+            ),
+            new OA\Response(response: 401, description: 'Unauthenticated'),
+            new OA\Response(response: 404, description: 'Goal tidak ditemukan'),
+        ]
+    )]
     public function show($id)
     {
         $goal = FinancialGoal::where('user_id', Auth::id())->findOrFail($id);
@@ -94,6 +186,54 @@ class FinancialGoalController extends Controller
     }
 
     // ─── PUT /api/goals/{id} ──────────────────────────────────────
+    #[OA\Put(
+        path: '/goals/{id}',
+        operationId: 'updateGoal',
+        summary: 'Perbarui target keuangan',
+        description: '`amount_per_period` dihitung ulang otomatis jika target_amount, start_date, target_date, atau filling_plan diubah.',
+        tags: ['Goals'],
+        security: [['sanctum' => []]],
+        parameters: [
+            new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'integer'), example: 1),
+        ],
+        requestBody: new OA\RequestBody(
+            required: false,
+            content: new OA\JsonContent(
+                properties: [
+                    new OA\Property(property: 'goal_name', type: 'string', maxLength: 255, example: 'Dana Darurat'),
+                    new OA\Property(property: 'target_amount', type: 'number', format: 'float', minimum: 1000, example: 12000000),
+                    new OA\Property(property: 'start_date', type: 'string', format: 'date', example: '2026-01-01'),
+                    new OA\Property(property: 'target_date', type: 'string', format: 'date', example: '2026-12-31'),
+                    new OA\Property(property: 'filling_plan', type: 'string', enum: ['DAILY', 'WEEKLY', 'MONTHLY'], example: 'MONTHLY'),
+                    new OA\Property(property: 'current_amount', type: 'number', format: 'float', minimum: 0, example: 3000000),
+                    new OA\Property(property: 'icon', type: 'string', nullable: true, maxLength: 10, example: '🎯'),
+                    new OA\Property(property: 'color_theme', type: 'string', nullable: true, maxLength: 20, example: '#6366f1'),
+                ]
+            )
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Goal berhasil diperbarui',
+                content: new OA\JsonContent(properties: [
+                    new OA\Property(property: 'success', type: 'boolean', example: true),
+                    new OA\Property(property: 'message', type: 'string', example: 'Goal updated successfully.'),
+                    new OA\Property(property: 'data', ref: '#/components/schemas/FinancialGoal'),
+                ])
+            ),
+            new OA\Response(response: 401, description: 'Unauthenticated'),
+            new OA\Response(response: 404, description: 'Goal tidak ditemukan'),
+            new OA\Response(
+                response: 422,
+                description: "Validasi gagal, atau filling_plan tidak tersedia untuk durasi yang dipilih",
+                content: new OA\JsonContent(properties: [
+                    new OA\Property(property: 'success', type: 'boolean', example: false),
+                    new OA\Property(property: 'message', type: 'string', example: "Plan 'WEEKLY' is not available for this duration."),
+                    new OA\Property(property: 'available_plans', type: 'array', items: new OA\Items(type: 'object')),
+                ])
+            ),
+        ]
+    )]
     public function update(Request $request, $id)
     {
         $goal = FinancialGoal::where('user_id', Auth::id())->findOrFail($id);
@@ -152,6 +292,48 @@ class FinancialGoalController extends Controller
     }
 
 
+    #[OA\Put(
+        path: '/goals/{id}/funds',
+        operationId: 'updateGoalFunds',
+        summary: 'Tambah atau kurangi dana pada target keuangan',
+        description: 'Jika type=decrease menyebabkan current_amount < 0, nilai akan dibatasi minimal 0.',
+        tags: ['Goals'],
+        security: [['sanctum' => []]],
+        parameters: [
+            new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'integer'), example: 1),
+        ],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                required: ['type', 'amount'],
+                properties: [
+                    new OA\Property(property: 'type', type: 'string', enum: ['increase', 'decrease'], example: 'increase'),
+                    new OA\Property(property: 'amount', type: 'number', format: 'float', minimum: 1, example: 500000),
+                ]
+            )
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Dana berhasil diperbarui',
+                content: new OA\JsonContent(properties: [
+                    new OA\Property(property: 'status', type: 'string', example: 'success'),
+                    new OA\Property(property: 'message', type: 'string', example: 'Funds berhasil diperbarui'),
+                    new OA\Property(property: 'data', ref: '#/components/schemas/FinancialGoal'),
+                ])
+            ),
+            new OA\Response(response: 401, description: 'Unauthenticated'),
+            new OA\Response(response: 404, description: 'Goal tidak ditemukan', content: new OA\JsonContent(ref: '#/components/schemas/MessageResponse')),
+            new OA\Response(
+                response: 422,
+                description: 'Validasi gagal',
+                content: new OA\JsonContent(properties: [
+                    new OA\Property(property: 'status', type: 'string', example: 'error'),
+                    new OA\Property(property: 'errors', type: 'object'),
+                ])
+            ),
+        ]
+    )]
     public function updateFunds(Request $request, $id)
     {
         $goal = FinancialGoal::where(
@@ -207,6 +389,24 @@ class FinancialGoalController extends Controller
     }
 
     // ─── DELETE /api/goals/{id} ───────────────────────────────────
+    #[OA\Delete(
+        path: '/goals/{id}',
+        operationId: 'deleteGoal',
+        summary: 'Hapus target keuangan',
+        tags: ['Goals'],
+        security: [['sanctum' => []]],
+        parameters: [
+            new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'integer'), example: 1),
+        ],
+        responses: [
+            new OA\Response(response: 200, description: 'Goal berhasil dihapus', content: new OA\JsonContent(properties: [
+                new OA\Property(property: 'success', type: 'boolean', example: true),
+                new OA\Property(property: 'message', type: 'string', example: 'Goal deleted successfully.'),
+            ])),
+            new OA\Response(response: 401, description: 'Unauthenticated'),
+            new OA\Response(response: 404, description: 'Goal tidak ditemukan'),
+        ]
+    )]
     public function destroy($id)
     {
         $goal = FinancialGoal::where('user_id', Auth::id())->findOrFail($id);

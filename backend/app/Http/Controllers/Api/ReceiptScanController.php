@@ -5,9 +5,54 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use OpenApi\Attributes as OA;
 
 class ReceiptScanController extends Controller
 {
+    #[OA\Post(
+        path: '/receipt/scan',
+        operationId: 'scanReceipt',
+        summary: 'Scan struk belanja menggunakan AI',
+        description: 'Mengunggah foto struk, lalu menggunakan AI (Groq) untuk mengekstrak deskripsi, jumlah, tanggal, dan tipe transaksi.',
+        tags: ['Transactions'],
+        security: [['sanctum' => []]],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\MediaType(
+                mediaType: 'multipart/form-data',
+                schema: new OA\Schema(
+                    required: ['receipt'],
+                    properties: [
+                        new OA\Property(
+                            property: 'receipt',
+                            type: 'string',
+                            format: 'binary',
+                            description: 'File gambar struk (jpg, jpeg, png, webp, gif), maks 10MB'
+                        ),
+                    ]
+                )
+            )
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Data struk berhasil diekstrak',
+                content: new OA\JsonContent(properties: [
+                    new OA\Property(property: 'status', type: 'string', example: 'success'),
+                    new OA\Property(property: 'data', properties: [
+                        new OA\Property(property: 'description', type: 'string', example: 'Indomaret - belanja bulanan'),
+                        new OA\Property(property: 'amount', type: 'integer', example: 150000),
+                        new OA\Property(property: 'transaction_date', type: 'string', format: 'date', example: '2026-06-12'),
+                        new OA\Property(property: 'type', type: 'string', example: 'EXPENSE'),
+                    ], type: 'object'),
+                ])
+            ),
+            new OA\Response(response: 401, description: 'Unauthenticated'),
+            new OA\Response(response: 422, description: 'Validasi gagal atau gagal membaca data dari struk', content: new OA\JsonContent(ref: '#/components/schemas/MessageResponse')),
+            new OA\Response(response: 500, description: 'API key AI tidak dikonfigurasi', content: new OA\JsonContent(ref: '#/components/schemas/MessageResponse')),
+            new OA\Response(response: 502, description: 'Gagal menghubungi layanan AI', content: new OA\JsonContent(ref: '#/components/schemas/MessageResponse')),
+        ]
+    )]
     public function scan(Request $request)
     {
         $request->validate([
