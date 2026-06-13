@@ -1,0 +1,15 @@
+@import "tailwindcss";
+
+@theme {
+  --color-wealthwise-bg: #000000; /* Latar belakang hitam pekat */
+  --color-wealthwise-input: #1a1a1a; /* Latar belakang input abu gelap */
+  --color-wealthwise-input-border: #2a2a2a; /* Warna border input */
+  --color-wealthwise-emerald: #10b981; /* Hijau Emerald */
+}
+
+/* Reset dasar agar body menggunakan tema baru */
+@layer base {
+  body {
+    @apply bg-wealthwise-bg text-white antialiased;
+  }
+}
