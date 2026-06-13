@@ -3,12 +3,14 @@ import { Link } from "react-router-dom";
 import { Bell, User, Menu } from "lucide-react";
 import api from "../api/axios";
 import { SidebarContext } from "../layouts/MainLayout";
+import { getUnreadNotificationCount } from "../services/notificationService";
 
 export default function Header({ title, rightSection, breadcrumbs }) {
   const { toggleSidebar } = useContext(SidebarContext);
   const [userName, setUserName] = useState(
     () => localStorage.getItem("wealthwise_user_name") || "",
   );
+  const [unreadCount, setUnreadCount] = useState(0);
 
   useEffect(() => {
     api
@@ -18,6 +20,10 @@ export default function Header({ title, rightSection, breadcrumbs }) {
         setUserName(name);
         localStorage.setItem("wealthwise_user_name", name);
       })
+      .catch(() => {});
+
+    getUnreadNotificationCount()
+      .then(setUnreadCount)
       .catch(() => {});
   }, []);
 
@@ -78,9 +84,14 @@ export default function Header({ title, rightSection, breadcrumbs }) {
         {/* NOTIFICATION */}
         <Link
           to="/notifications"
-          className="text-gray-400 hover:text-white transition-colors"
+          className="relative text-gray-400 hover:text-white transition-colors"
         >
           <Bell size={18} />
+          {unreadCount > 0 && (
+            <span className="absolute -top-1.5 -right-1.5 min-w-[16px] h-4 px-1 rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center leading-none">
+              {unreadCount > 9 ? "9+" : unreadCount}
+            </span>
+          )}
         </Link>
 
         {/* SLOT EXTRA — konten tambahan dari halaman (opsional) */}
