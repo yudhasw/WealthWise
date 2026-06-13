@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import api from "../../api/axios";
+import TermsModal from "../../components/modals/TermsModal";
+import PrivacyModal from "../../components/modals/PrivacyModal";
 
 export default function Register() {
   const [name, setName] = useState("");
@@ -12,6 +14,10 @@ export default function Register() {
   const [errors, setErrors] = useState({});
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
+
+  // State untuk modal Terms & Privacy
+  const [showTerms, setShowTerms] = useState(false);
+  const [showPrivacy, setShowPrivacy] = useState(false);
 
   const navigate = useNavigate();
 
@@ -64,6 +70,10 @@ export default function Register() {
 
   return (
     <div className="flex min-h-screen w-full bg-[#121417] font-sans antialiased text-gray-200">
+      {/* MODALS: Terms of Service & Privacy Policy */}
+      <TermsModal isOpen={showTerms} onClose={() => setShowTerms(false)} />
+      <PrivacyModal isOpen={showPrivacy} onClose={() => setShowPrivacy(false)} />
+
       {/* LEFT SIDE: Visual/Branding (3/8 atau 37.5%) */}
       <div className="relative hidden lg:block lg:w-[37.5%] overflow-hidden">
         <img
@@ -216,19 +226,21 @@ export default function Register() {
               />
               <label htmlFor="terms" className="ml-3 text-sm text-gray-400">
                 I agree to the{" "}
-                <a
-                  href="#"
+                <button
+                  type="button"
+                  onClick={() => setShowTerms(true)}
                   className="text-[#047857] font-semibold hover:underline"
                 >
                   Terms of Service
-                </a>{" "}
+                </button>{" "}
                 and{" "}
-                <a
-                  href="#"
+                <button
+                  type="button"
+                  onClick={() => setShowPrivacy(true)}
                   className="text-[#047857] font-semibold hover:underline"
                 >
                   Privacy Policy
-                </a>
+                </button>
                 .
               </label>
             </div>
