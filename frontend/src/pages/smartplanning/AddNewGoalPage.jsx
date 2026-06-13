@@ -2,8 +2,7 @@ import React, { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { CheckCircle2, AlertCircle, Sparkles } from "lucide-react";
 import api from "../../api/axios";
-import Sidebar from "../../layouts/Sidebar";
-import Header from "../../components/Header";
+import MainLayout from "../../layouts/MainLayout";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // HELPERS
@@ -201,51 +200,36 @@ const AddNewGoalPage = () => {
   // ─────────────────────────────────────────────────────────────────────────
 
   return (
-    <div className="min-h-screen bg-[#121417] flex text-white overflow-hidden font-sans">
-      <Sidebar />
-
-      <main className="flex-1 overflow-y-auto">
-        <Header title="Smart Planning" />
-
-        {/* Success Overlay */}
-        {success && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
-            <div className="bg-[#1A1E24] rounded-2xl p-8 flex flex-col items-center gap-3">
-              <CheckCircle2 size={48} className="text-[#067A55]" />
-              <p className="font-black text-lg text-white">
-                Goal Berhasil Dibuat!
-              </p>
-              <p className="text-gray-400 text-sm">
-                Mengarahkan ke dashboard...
-              </p>
-            </div>
+    <MainLayout
+      title="Add New Goal"
+      breadcrumbs={[
+        { label: "Smart Planning", to: "/smart-planning" },
+        { label: "Add New Goal" },
+      ]}
+    >
+      {/* Success Overlay */}
+      {success && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
+          <div className="bg-[#1A1E24] rounded-2xl p-8 flex flex-col items-center gap-3">
+            <CheckCircle2 size={48} className="text-[#067A55]" />
+            <p className="font-black text-lg text-white">
+              Goal Berhasil Dibuat!
+            </p>
+            <p className="text-gray-400 text-sm">
+              Mengarahkan ke dashboard...
+            </p>
           </div>
-        )}
-
-        {/* Breadcrumb */}
-        <div className="px-8 pt-5 pb-1 text-xs text-gray-500 flex items-center gap-2">
-          <button
-            onClick={() => navigate("/smart-planning")}
-            className="hover:text-gray-300 transition"
-          >
-            Smart Planning
-          </button>
-          <span>›</span>
-          <span className="text-gray-300">Add New Goal</span>
         </div>
+      )}
 
-        {/* Page Title */}
-        <div className="px-8 pt-3 pb-6">
-          <h1 className="text-3xl font-black text-[#067A55]">Add New Goal</h1>
-          <p className="text-gray-500 text-sm mt-1">
-            Isi detail di bawah untuk membuat target tabungan baru.
-          </p>
-        </div>
+      <div className="max-w-2xl mx-auto">
+        <p className="text-gray-400 text-sm mb-8">
+          Isi detail di bawah untuk membuat target tabungan baru.
+        </p>
 
         {/* Form Card — sama persis style gambar 1 */}
-        <div className="px-8 pb-10">
-          <div className="bg-[#1A1E24] rounded-2xl border border-white/5 p-8 max-w-2xl space-y-6">
-            {/* API Error */}
+        <div className="bg-[#1A1E24] rounded-2xl border border-white/5 p-8 space-y-6">
+        {/* API Error */}
             {apiError && (
               <div className="flex items-start gap-2 bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3">
                 <AlertCircle
@@ -512,8 +496,7 @@ const AddNewGoalPage = () => {
             </div>
           </div>
         </div>
-      </main>
-    </div>
+    </MainLayout>
   );
 };
 

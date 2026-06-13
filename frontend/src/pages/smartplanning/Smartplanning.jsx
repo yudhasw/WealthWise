@@ -24,7 +24,6 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import MainLayout from "../../layouts/MainLayout";
-import Header from "../../components/Header";
 import GoalCard from "../../components/smartplanning/GoalCard";
 import PopUpDeleteGoal from "../../components/PopUpDeleteGoal";
 import api from "../../api/axios";
@@ -309,9 +308,7 @@ const Smartplanning = () => {
   // RENDER
   // ─────────────────────────────────────────────────────────────────────────
   return (
-    <MainLayout isLoading={isLoading}>
-      <Header title="Smart Planning" />
-
+    <MainLayout isLoading={isLoading} title="Smart Planning">
       <div className="grid grid-cols-12 gap-5 mt-6">
         {/* ════════════════════════════════════════════
               LEFT COLUMN — Overview & Chart

@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import MainLayout from "../../layouts/MainLayout";
-import Header from "../../components/Header";
 import api from "../../api/axios";
 
 // ── Edit Modal ────────────────────────────────────────────────────
@@ -171,16 +170,15 @@ export default function EditProfilePage() {
   };
 
   return (
-    <MainLayout isLoading={isLoading}>
-      <Header
-        title="Edit Profile"
-        breadcrumbs={[
-          { label: "Dashboard", to: "/dashboard" },
-          { label: "Profile", to: "/profile" },
-          { label: "Edit Profile" },
-        ]}
-      />
-
+    <MainLayout
+      isLoading={isLoading}
+      title="Edit Profile"
+      breadcrumbs={[
+        { label: "Dashboard", to: "/dashboard" },
+        { label: "Profile", to: "/profile" },
+        { label: "Edit Profile" },
+      ]}
+    >
       {/* PROFILE HERO */}
       <div className="bg-white rounded-xl p-7 mb-4 border border-gray-100 shadow-sm">
         <div className="flex items-start gap-5">

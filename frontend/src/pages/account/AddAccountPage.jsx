@@ -95,7 +95,14 @@ export default function AddAccountPage() {
   const currentConfig = typeConfig[accountType];
 
   return (
-    <MainLayout isLoading={false}>
+    <MainLayout
+      isLoading={false}
+      title="Add Account"
+      breadcrumbs={[
+        { label: "Accounts", to: "/accounts" },
+        { label: "Add Account" },
+      ]}
+    >
       {/* MODAL POPUP KONFIRMASI */}
       {showPopup && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#1e293b]/60 backdrop-blur-sm p-4">
@@ -138,17 +145,11 @@ export default function AddAccountPage() {
         </div>
       )}
 
-      {/* HEADER */}
-      <header className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-8 gap-4 relative z-10">
-        <div>
-          <h1 className="text-3xl font-bold text-[#051C3A] mb-2 tracking-tight">
-            Tambah Akun Baru
-          </h1>
-          <p className="text-gray-500 text-sm">
-            Kelola aset digital Anda dengan presisi atelier.
-          </p>
-        </div>
-        
+      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-8 gap-4 relative z-10">
+        <p className="text-gray-400 text-sm">
+          Kelola aset digital Anda dengan presisi atelier.
+        </p>
+
         {/* Status Badge */}
         <div className="bg-[#E6F4EA] text-[#1E8E3E] px-4 py-2.5 rounded-lg flex items-center gap-2 text-sm font-semibold border border-[#1E8E3E]/10">
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -156,7 +157,7 @@ export default function AddAccountPage() {
           </svg>
           Ready to save your new account.
         </div>
-      </header>
+      </div>
 
       {/* MAIN CONTENT GRID */}
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-8 relative z-10">

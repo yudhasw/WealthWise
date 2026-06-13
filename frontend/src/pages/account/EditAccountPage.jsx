@@ -147,7 +147,14 @@ export default function EditAccountPage() {
   const currentConfig = typeConfig[accountType] || typeConfig["Tunai"];
 
   return (
-    <MainLayout isLoading={isLoading}>
+    <MainLayout
+      isLoading={isLoading}
+      title="Edit Account"
+      breadcrumbs={[
+        { label: "Accounts", to: "/accounts" },
+        { label: "Edit Account" },
+      ]}
+    >
       {/* MODAL POPUP KONFIRMASI */}
       {showPopup && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#1e293b]/60 backdrop-blur-sm p-4">
@@ -185,17 +192,9 @@ export default function EditAccountPage() {
         </div>
       )}
 
-      {/* HEADER */}
-      <header className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-8 gap-4 relative z-10">
-        <div>
-          <h1 className="text-3xl font-bold text-[#051C3A] mb-2 tracking-tight">
-            Edit Akun
-          </h1>
-          <p className="text-gray-500 text-sm">
-            Sesuaikan informasi aset dan saldo Anda dengan presisi.
-          </p>
-        </div>
-      </header>
+      <p className="text-gray-400 text-sm mb-8">
+        Sesuaikan informasi aset dan saldo Anda dengan presisi.
+      </p>
 
       {/* MAIN CONTENT GRID */}
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-8 relative z-10">

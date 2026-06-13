@@ -1,8 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import MainLayout from "../../layouts/MainLayout";
 import api from "../../api/axios";
-import Header from "../../components/Header";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 // ── Gauge Chart ────────────────────────────────────────────────────
 function GaugeChart({ score }) {
@@ -136,6 +135,7 @@ function InsightCard({ emoji, title, desc, actionLabel, actionHref, urgent }) {
 
 // ── Main Page ─────────────────────────────────────────────────────
 export default function FinancialHealth() {
+  const location = useLocation();
   const [summary, setSummary] = useState(null);
   const [insights, setInsights] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -148,6 +148,9 @@ export default function FinancialHealth() {
   const [chatInput, setChatInput] = useState("");
   const [isChatLoading, setIsChatLoading] = useState(false);
   const chatEndRef = useRef(null);
+  const chatSectionRef = useRef(null);
+  const chatInputRef = useRef(null);
+  const isInitialChatRender = useRef(true);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -166,8 +169,19 @@ export default function FinancialHealth() {
   }, []);
 
   useEffect(() => {
+    if (isInitialChatRender.current) {
+      isInitialChatRender.current = false;
+      return;
+    }
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [chatMessages]);
+
+  useEffect(() => {
+    if (location.state?.focusChat) {
+      chatSectionRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+      chatInputRef.current?.focus();
+    }
+  }, [location.state]);
 
   const formatRupiah = (amount) =>
     new Intl.NumberFormat("id-ID", {
@@ -242,12 +256,7 @@ export default function FinancialHealth() {
   ];
 
   return (
-    <MainLayout isLoading={isLoading}>
-      {/* HEADER */}
-      <Header
-        title="Financial Health"
-      />
-
+    <MainLayout isLoading={isLoading} title="Financial Health">
       {/* WEALTHWISE INDEX */}
       <div className="relative bg-[#1a1d21] rounded-3xl p-8 mb-6 border border-white/5 flex flex-col items-center overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-emerald-500/5 to-transparent pointer-events-none" />
@@ -269,7 +278,7 @@ export default function FinancialHealth() {
         {/* Insights */}
         <div className="lg:col-span-3">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-white font-bold text-lg">Insights</h3>
+            <h3 className="text-white font-bold text-lg">Insight hari ini</h3>
             {insights.length > 0 && (
               <span className="text-xs text-gray-500 bg-white/5 px-2.5 py-1 rounded-full border border-white/5">
                 {insights.length} rekomendasi
@@ -295,6 +304,7 @@ export default function FinancialHealth() {
 
         {/* AI Planner Chat */}
         <div
+          ref={chatSectionRef}
           className="lg:col-span-2 bg-[#1a1d21] rounded-3xl p-5 flex flex-col border border-white/5"
           style={{ minHeight: "460px" }}
         >
@@ -380,6 +390,7 @@ export default function FinancialHealth() {
           {/* Chat Input */}
           <div className="flex gap-2">
             <input
+              ref={chatInputRef}
               type="text"
               value={chatInput}
               onChange={(e) => setChatInput(e.target.value)}

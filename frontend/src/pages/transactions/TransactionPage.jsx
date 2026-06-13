@@ -4,7 +4,6 @@ import MainLayout from "../../layouts/MainLayout";
 import api from "../../api/axios";
 import SummaryCard from "../../components/SummaryCard";
 import TransactionTable from "../../components/TransactionTable";
-import Header from "../../components/Header";
 import { Link } from "react-router-dom";
 
 export default function Transactions() {
@@ -134,10 +133,7 @@ export default function Transactions() {
     .reduce((sum, tx) => sum + (Number(tx.transaction_amount) || 0), 0);
 
   return (
-    <MainLayout isLoading={isLoading}>
-      {/* HEADER */}
-      <Header title="Transactions" />
-
+    <MainLayout isLoading={isLoading} title="Transactions">
       {/* FILTER BAR */}
       <div className="bg-white border border-[#1e2124] rounded-2xl p-4 mb-6 flex flex-wrap md:flex-nowrap gap-4 items-end w-full">
         {/* Date From */}

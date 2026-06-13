@@ -41,6 +41,11 @@ export default function EditCategoryPage() {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
+  const handleBudgetInput = (e) => {
+    const raw = e.target.value.replace(/\D/g, "");
+    setForm((prev) => ({ ...prev, initialBudget: raw }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
@@ -65,45 +70,16 @@ export default function EditCategoryPage() {
   const isExpense = form.type === "Expense";
 
   return (
-    <MainLayout>
-      {/* HEADER */}
-      <header className="flex justify-between items-center mb-8">
-        <h2 className="text-2xl font-semibold text-emerald-500">Categories</h2>
-        <div className="flex items-center gap-5">
-          <button className="text-gray-400 hover:text-white transition-colors">
-            <svg fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-            </svg>
-          </button>
-          <button className="p-2 bg-[#2A2A2A] rounded-full text-gray-400 hover:text-white transition-colors">
-            <svg fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-          </button>
-          <div className="w-10 h-10 rounded-full bg-slate-700 flex items-center justify-center overflow-hidden border-2 border-gray-800">
-            <svg viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 text-blue-300 mt-2">
-              <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
-            </svg>
-          </div>
-        </div>
-      </header>
-
-      {/* BREADCRUMB */}
-      <nav className="flex items-center gap-2 text-sm mb-6">
-        <button onClick={() => navigate("/categories")} className="text-gray-400 hover:text-white transition-colors">
-          Categories
-        </button>
-        <svg fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4 text-gray-600">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-        </svg>
-        <span className="text-emerald-500 font-medium">Edit Category</span>
-      </nav>
-
-      {/* PAGE TITLE */}
-      <div className="mb-8">
-        <h1 className="text-4xl font-bold text-white mb-2">Edit Category</h1>
-        <p className="text-gray-400 text-sm">Perbarui informasi kategori budget kamu.</p>
-      </div>
+    <MainLayout
+      title="Edit Category"
+      breadcrumbs={[
+        { label: "Categories", to: "/categories" },
+        { label: "Edit Category" },
+      ]}
+    >
+      <p className="text-gray-400 text-sm mb-8">
+        Perbarui informasi kategori budget kamu.
+      </p>
 
       {error && (
         <div className="bg-red-100 text-red-700 rounded-2xl px-6 py-4 mb-6 text-sm">{error}</div>
@@ -157,12 +133,12 @@ export default function EditCategoryPage() {
                   <div className="flex items-center bg-[#F3F4F6] rounded-xl px-5 py-4 gap-3">
                     <span className="text-gray-500 font-semibold text-sm">Rp</span>
                     <input
-                      type="number"
+                      type="text"
+                      inputMode="numeric"
                       name="initialBudget"
-                      value={form.initialBudget}
-                      onChange={handleChange}
+                      value={form.initialBudget ? Number(form.initialBudget).toLocaleString("id-ID") : ""}
+                      onChange={handleBudgetInput}
                       placeholder="0"
-                      min="0"
                       className="flex-1 bg-transparent text-gray-800 placeholder-gray-400 text-sm font-medium focus:outline-none"
                     />
                   </div>

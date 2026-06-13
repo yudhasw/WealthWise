@@ -1,10 +1,16 @@
-import { createContext, useState } from "react";
+import { useState } from "react";
 import Sidebar from "./Sidebar";
+import Header from "../components/Header";
 import LoadingOverlay from "../components/LoadingOverlay";
+import { SidebarContext } from "../context/SidebarContext";
 
-export const SidebarContext = createContext({ toggleSidebar: () => {} });
-
-export default function MainLayout({ children, isLoading = false }) {
+export default function MainLayout({
+  children,
+  isLoading = false,
+  title,
+  breadcrumbs,
+  rightSection,
+}) {
   const [sidebarOpen, setSidebarOpen] = useState(
     () => window.innerWidth >= 1024,
   );
@@ -25,6 +31,7 @@ export default function MainLayout({ children, isLoading = false }) {
         )}
 
         <main className="flex-1 overflow-y-auto relative">
+          <Header title={title} breadcrumbs={breadcrumbs} rightSection={rightSection} />
           <div className="p-4 lg:p-10 relative">
             {isLoading && <LoadingOverlay />}
             {children}

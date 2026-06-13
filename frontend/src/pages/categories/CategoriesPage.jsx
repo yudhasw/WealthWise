@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import MainLayout from "../../layouts/MainLayout";
-import Header from "../../components/Header";
 import { Link } from "react-router-dom";
 import api from "../../api/axios";
 
@@ -348,7 +347,10 @@ export default function CategoriesPage() {
     fetchCategories();
   }, [fetchCategories]);
 
-  const expenseCategories = categories.filter((c) => c.type === "EXPENSE");
+  const expenseCategories = categories
+    .filter((c) => c.type === "EXPENSE")
+    .slice()
+    .sort((a, b) => Number(b.spent ?? 0) - Number(a.spent ?? 0));
   const incomeCategories = categories.filter((c) => c.type === "INCOME");
 
   const totalBudget = expenseCategories.reduce(
@@ -391,7 +393,7 @@ export default function CategoriesPage() {
       : `Tahun ${selectedYear}`;
 
   return (
-    <MainLayout isLoading={loading}>
+    <MainLayout isLoading={loading} title="Categories">
       {deleteTarget && (
         <DeleteModal
           category={deleteTarget}
@@ -400,9 +402,6 @@ export default function CategoriesPage() {
           loading={deleteLoading}
         />
       )}
-
-      {/* HEADER */}
-      <Header title="Categories" />
 
       {/* BUDGET OVERVIEW CARD */}
       <div className="rounded-3xl bg-gradient-to-br from-[#0E7958] via-[#0a5c42] to-[#0f2027] p-8 mb-8">

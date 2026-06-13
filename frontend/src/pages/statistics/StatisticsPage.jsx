@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import api from "../../api/axios";
 import MainLayout from "../../layouts/MainLayout";
-import Header from "../../components/Header";
 
 import {
   ResponsiveContainer,
@@ -13,6 +12,13 @@ import {
   XAxis,
   Tooltip,
 } from "recharts";
+
+const formatRupiah = (value) =>
+  new Intl.NumberFormat("id-ID", {
+    style: "currency",
+    currency: "IDR",
+    minimumFractionDigits: 0,
+  }).format(value || 0);
 
 export default function StatisticsPage() {
   const [mode, setMode] = useState("outcome");
@@ -57,8 +63,7 @@ export default function StatisticsPage() {
     })) || [];
 
   return (
-    <MainLayout isLoading={isLoading}>
-      <Header title="Statistics" />
+    <MainLayout isLoading={isLoading} title="Statistics">
       <div className="w-full text-white p-6">
         {/* FILTER */}
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-8">
@@ -268,7 +273,7 @@ export default function StatisticsPage() {
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={barData}>
                   <XAxis dataKey="day" />
-                  <Tooltip />
+                  <Tooltip formatter={(value) => [formatRupiah(value), "Total"]} />
                   <Bar
                     dataKey="value"
                     radius={[8, 8, 0, 0]}

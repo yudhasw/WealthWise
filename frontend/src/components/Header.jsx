@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from "react";
 import { Link } from "react-router-dom";
 import { Bell, User, Menu } from "lucide-react";
 import api from "../api/axios";
-import { SidebarContext } from "../layouts/MainLayout";
+import { SidebarContext } from "../context/SidebarContext";
 import { getUnreadNotificationCount } from "../services/notificationService";
 
 export default function Header({ title, rightSection, breadcrumbs }) {
@@ -30,7 +30,7 @@ export default function Header({ title, rightSection, breadcrumbs }) {
   const firstName = userName.split(" ")[0];
 
   return (
-    <header className="bg-[#191C1E] border-b border-white/5 flex items-center justify-between px-1 py-4 min-h-20">
+    <header className="bg-[#191C1E] border-b border-white/5 flex items-center justify-between px-4 lg:px-10 py-4 min-h-20">
       {/* HAMBURGER */}
       <div className="flex items-center gap-3">
         <button

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import MainLayout from "../../layouts/MainLayout";
-import Header from "../../components/Header";
 import { Link } from "react-router-dom";
 import { Pencil, Trash2 } from "lucide-react";
 import api from "../../api/axios";
@@ -194,7 +193,7 @@ export default function AccountPage() {
   };
 
   return (
-    <MainLayout isLoading={isLoading}>
+    <MainLayout isLoading={isLoading} title="Accounts">
       {/* ======================= MODAL HAPUS ======================= */}
       {showDeleteModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#1e293b]/60 backdrop-blur-sm p-4">
@@ -239,11 +238,6 @@ export default function AccountPage() {
           </div>
         </div>
       )}
-
-      {/* HEADER SECTION */}
-      <Header
-        title="Accounts"
-      />
 
       {/* TOTAL SALDO CARD */}
       <div className="bg-[#051C3A] rounded-3xl p-8 md:p-10 relative overflow-hidden shadow-xl flex flex-col justify-center mb-10">

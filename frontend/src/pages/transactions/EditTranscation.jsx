@@ -57,6 +57,15 @@ export default function EditTransaction() {
     }
   };
 
+  // Format input amount (angka saja)
+  const handleAmountInput = (e) => {
+    const raw = e.target.value.replace(/\D/g, "");
+    setForm((prev) => ({ ...prev, amount: raw }));
+    if (fieldErrors.amount) {
+      setFieldErrors((prev) => ({ ...prev, amount: "" }));
+    }
+  };
+
   const validate = () => {
     const errors = {};
     if (!form.description.trim()) errors.description = "Deskripsi wajib diisi.";
@@ -96,11 +105,15 @@ export default function EditTransaction() {
   );
 
   return (
-    <MainLayout isLoading={isLoadingData}>
+    <MainLayout
+      isLoading={isLoadingData}
+      title="Edit Transaction"
+      breadcrumbs={[
+        { label: "Transactions", to: "/transactions" },
+        { label: "Edit Transaction" },
+      ]}
+    >
       <div className="max-w-2xl mx-auto">
-        <h1 className="text-3xl font-extrabold text-emerald-400 mb-7">
-          Edit Transaction
-        </h1>
         <div className="bg-[#2C2F32] border border-[#262b2f] rounded-2xl p-8 shadow-xl">
           {/* Form Fields - Identik dengan Add Page */}
           <div className="mb-5">
@@ -165,9 +178,10 @@ export default function EditTransaction() {
               </label>
               <input
                 type="text"
+                inputMode="numeric"
                 name="amount"
-                value={form.amount}
-                onChange={handleChange}
+                value={form.amount ? Number(form.amount).toLocaleString("id-ID") : ""}
+                onChange={handleAmountInput}
                 className={`w-full bg-[#f4f5f6] text-black px-4 py-3.5 rounded-xl text-sm border ${fieldErrors.amount ? "border-red-500" : "border-transparent"}`}
               />
               {fieldErrors.amount && (

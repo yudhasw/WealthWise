@@ -12,7 +12,6 @@ import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import MainLayout from "../../layouts/MainLayout";
 import api from "../../api/axios";
-import Header from "../../components/Header";
 
 // ── Stats Card ────────────────────────────────────────────────────
 function StatsCard({ label, value, sub, valueColor, bar, barColor, barPct }) {
@@ -159,14 +158,14 @@ export default function ProfilePage() {
   const expensePct = income > 0 ? (expense / income) * 100 : 0;
 
   return (
-    <MainLayout isLoading={isLoading}>
-      <Header
-        title="Profile"
-        breadcrumbs={[
-          { label: "Dashboard", to: "/dashboard" },
-          { label: "Profile" },
-        ]}
-      />
+    <MainLayout
+      isLoading={isLoading}
+      title="Profile"
+      breadcrumbs={[
+        { label: "Dashboard", to: "/dashboard" },
+        { label: "Profile" },
+      ]}
+    >
       {/* PROFILE HERO */}
       <div className="bg-white rounded-xl p-7 mb-4 border border-gray-100 shadow-sm">
         <div className="flex items-start gap-5">

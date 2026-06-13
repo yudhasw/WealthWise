@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import MainLayout from "../../layouts/MainLayout";
-import Header from "../../components/Header";
 import api from "../../api/axios";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
 import TransactionTable from "../../components/TransactionTable";
@@ -65,7 +64,7 @@ export default function Dashboard() {
   const COLORS = ["#10b981", "#3b82f6", "#f59e0b", "#8b5cf6", "#ef4444"];
 
   return (
-    <MainLayout isLoading={isLoading}>
+    <MainLayout isLoading={isLoading} title="Dashboard">
       {showScanModal && (
         <ScanReceiptModal
           onClose={() => setShowScanModal(false)}
@@ -74,11 +73,6 @@ export default function Dashboard() {
           }
         />
       )}
-
-      {/* HEADER */}
-      <Header
-        title="Dashboard"
-      />
 
       {error && (
         <div className="bg-red-500/10 border border-red-500/20 text-red-400 p-4 rounded-2xl mb-6 text-sm font-semibold">
@@ -226,7 +220,10 @@ export default function Dashboard() {
               </span>
             </button>
 
-            <button className="flex-1 bg-[#102A20] border border-emerald-500/20 rounded-2xl p-6 flex flex-col items-center justify-center hover:bg-[#15382a] transition-all shadow-md">
+            <button
+              onClick={() => navigate("/financial-health", { state: { focusChat: true } })}
+              className="flex-1 bg-[#102A20] border border-emerald-500/20 rounded-2xl p-6 flex flex-col items-center justify-center hover:bg-[#15382a] transition-all shadow-md"
+            >
               <div className="bg-white p-3 rounded-full mb-3 shadow-sm">
                 <svg
                   fill="none"

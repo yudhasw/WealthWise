@@ -71,6 +71,12 @@ const EditGoalPage = () => {
     });
   };
 
+  // Format input nominal (angka saja, tampil dengan pemisah titik)
+  const handleAmountInput = (e) => {
+    const raw = e.target.value.replace(/\D/g, "");
+    setForm((prev) => ({ ...prev, [e.target.name]: raw }));
+  };
+
   // =========================
   // Handle Submit
   // =========================
@@ -223,10 +229,11 @@ const EditGoalPage = () => {
                   />
 
                   <input
-                    type="number"
+                    type="text"
+                    inputMode="numeric"
                     name="target_amount"
-                    value={form.target_amount}
-                    onChange={handleChange}
+                    value={form.target_amount ? Number(form.target_amount).toLocaleString("id-ID") : ""}
+                    onChange={handleAmountInput}
                     required
                     className="
                       w-full
@@ -240,7 +247,7 @@ const EditGoalPage = () => {
                       outline-none
                       focus:border-emerald-500
                     "
-                    placeholder="20000000"
+                    placeholder="20.000.000"
                   />
                 </div>
               </div>
@@ -289,10 +296,11 @@ const EditGoalPage = () => {
                 </label>
 
                 <input
-                  type="number"
+                  type="text"
+                  inputMode="numeric"
                   name="amount_per_period"
-                  value={form.amount_per_period}
-                  onChange={handleChange}
+                  value={form.amount_per_period ? Number(form.amount_per_period).toLocaleString("id-ID") : ""}
+                  onChange={handleAmountInput}
                   required
                   className="
                     w-full

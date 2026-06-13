@@ -83,6 +83,12 @@ export default function AddTransaction() {
     });
   };
 
+  // Format input amount (angka saja)
+  const handleAmountInput = (e) => {
+    const raw = e.target.value.replace(/\D/g, "");
+    setForm((prev) => ({ ...prev, amount: raw }));
+  };
+
   // Handler khusus untuk tombol Type agar mereset kategori
   const handleTypeChange = (newType) => {
     setForm((prev) => ({
@@ -179,27 +185,16 @@ export default function AddTransaction() {
   );
 
   return (
-    <MainLayout isLoading={isLoadingData}>
+    <MainLayout
+      isLoading={isLoadingData}
+      title="Add Transaction"
+      breadcrumbs={[
+        { label: "Transactions", to: "/transactions" },
+        { label: "Add Transaction" },
+      ]}
+    >
       <div className="max-w-2xl mx-auto">
-        {/* BREADCRUMB */}
-        <div className="flex items-center gap-2 text-sm text-gray-500 mb-6">
-          <span
-            className="cursor-pointer hover:text-gray-300 transition-colors"
-            onClick={() => navigate("/transactions")}
-          >
-            Transactions
-          </span>
-          <span className="text-gray-700">›</span>
-          <span className="text-emerald-400 font-semibold">
-            Add Transaction
-          </span>
-        </div>
-
-        {/* PAGE HEADER */}
-        <h1 className="text-3xl font-extrabold text-emerald-400 tracking-tight mb-1.5">
-          Add Transaction
-        </h1>
-        <p className="text-sm text-gray-500 mb-7">
+        <p className="text-sm text-gray-400 mb-7">
           Adjust the details of your transaction to maintain an accurate ledger.
         </p>
 
@@ -376,9 +371,10 @@ export default function AddTransaction() {
                 </span>
                 <input
                   type="text"
+                  inputMode="numeric"
                   name="amount"
-                  value={form.amount}
-                  onChange={handleChange}
+                  value={form.amount ? Number(form.amount).toLocaleString("id-ID") : ""}
+                  onChange={handleAmountInput}
                   placeholder="24.999.000"
                   className="w-full bg-[#f4f5f6] border border-[#262b2f] text-black placeholder-gray-400 pl-12 pr-4 py-3.5 rounded-xl text-sm focus:outline-none focus:border-emerald-500 transition-colors font-medium text-gray-600"
                 />
@@ -401,7 +397,7 @@ export default function AddTransaction() {
                     onChange={handleChange}
                     className="w-full appearance-none bg-[#f4f5f6] border border-[#262b2f] text-black px-4 py-3.5 rounded-xl text-sm focus:outline-none focus:border-emerald-500 transition-colors cursor-pointer font-medium text-gray-500"
                   >
-                    <option value="">Electronics</option>
+                    <option value="">Select Category</option>
                     {filteredCategories.map((cat) => (
                       <option key={cat.id} value={cat.id}>
                         {cat.category_name}
