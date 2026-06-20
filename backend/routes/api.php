@@ -15,6 +15,7 @@ use App\Http\Controllers\Api\ReceiptScanController;
 use App\Http\Controllers\Api\FinancialHealthController;
 use App\Http\Controllers\Api\FinancialGoalController;
 use App\Http\Controllers\Api\ProfileController;
+use App\Http\Controllers\Api\NotificationController;
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
@@ -71,6 +72,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/goals/{id}', [FinancialGoalController::class, 'update']);
     Route::delete('/goals/{id}', [FinancialGoalController::class, 'destroy']);
     Route::put('/goals/{id}/funds',[FinancialGoalController::class, 'updateFunds']);
+
+    Route::get('/notifications', [NotificationController::class, 'index']);
+    Route::get('/notifications/unread-count', [NotificationController::class, 'unreadCount']);
+    Route::put('/notifications/read-all', [NotificationController::class, 'markAllAsRead']);
+    Route::put('/notifications/{id}/read', [NotificationController::class, 'markAsRead']);
+    Route::delete('/notifications/{id}', [NotificationController::class, 'destroy']);
 });
 
 
